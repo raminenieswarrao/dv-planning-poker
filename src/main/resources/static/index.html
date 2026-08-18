@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>DV Planning Poker</title>
+    <title>DV Refinement Poker</title>
 
     <style>
 
@@ -16,271 +17,880 @@
 
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            font-family: Arial, Helvetica, sans-serif;
+
             background: #f4f7fb;
-            color: #1f2937;
+            color: #172033;
         }
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
 
         .header {
-            background: #ffffff;
-            border-bottom: 1px solid #ddd;
-            padding: 18px 30px;
-            font-size: 24px;
-            font-weight: bold;
+            height: 68px;
+
+            background: white;
+            border-bottom: 1px solid #dfe5ec;
+
+            padding: 0 28px;
+
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            font-size: 23px;
+            font-weight: 700;
         }
+
+        .header-icon {
+            font-size: 25px;
+        }
+
+        /* =====================================================
+           PAGE
+           ===================================================== */
 
         .container {
-            max-width: 1050px;
-            margin: 35px auto;
-            padding: 0 20px;
+            max-width: 1500px;
+
+            margin: 18px auto;
+
+            padding: 0 18px 18px;
         }
 
-        .card {
+        .panel {
             background: white;
-            border-radius: 12px;
-            padding: 30px;
+
+            border-radius: 16px;
+
+            padding: 22px;
+
             box-shadow:
-                    0 2px 12px rgba(0, 0, 0, 0.08);
+                    0 4px 18px rgba(0, 0, 0, 0.07);
         }
 
-        h1 {
-            margin-top: 0;
-        }
+        /* =====================================================
+           JOIN
+           ===================================================== */
 
         .join-box {
-            max-width: 450px;
-            margin: 70px auto;
+            max-width: 500px;
+
+            margin: 80px auto;
+        }
+
+        .join-box h1 {
+            margin-top: 0;
+            margin-bottom: 12px;
+
+            font-size: 32px;
+        }
+
+        .join-box p {
+            margin-bottom: 22px;
+
+            color: #5b6472;
         }
 
         input {
             width: 100%;
-            padding: 13px;
-            font-size: 16px;
-            border: 1px solid #bbb;
-            border-radius: 7px;
+
+            padding: 14px 16px;
+
             margin-bottom: 15px;
+
+            border: 1px solid #cbd3dd;
+            border-radius: 8px;
+
+            font-size: 17px;
+        }
+
+        input:focus {
+            outline: none;
+
+            border-color: #1473e6;
         }
 
         button {
             cursor: pointer;
+
+            font-family: inherit;
         }
 
         .primary-button {
-            background: #1473e6;
+            padding: 13px 24px;
+
             border: none;
-            color: white;
-            padding: 12px 22px;
-            border-radius: 7px;
-            font-size: 16px;
-        }
-
-        .room {
-            display: none;
-        }
-
-        .section-title {
-            margin-top: 30px;
-            margin-bottom: 15px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .participants {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .participant {
-            min-width: 150px;
-            padding: 15px;
             border-radius: 8px;
-            background: #f0f4f9;
-            text-align: center;
-        }
 
-        .participant-name {
-            font-weight: bold;
-            margin-bottom: 7px;
-        }
-
-        .host {
-            font-size: 12px;
-            color: #1473e6;
-        }
-
-        .status {
-            margin-top: 6px;
-            font-size: 14px;
-        }
-
-        .vote-result {
-            margin-top: 8px;
-            font-size: 25px;
-            font-weight: bold;
-        }
-
-        .cards {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .poker-card {
-            width: 65px;
-            height: 90px;
-            background: white;
-            border: 2px solid #1473e6;
-            border-radius: 8px;
-            color: #1473e6;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .poker-card:hover {
-            background: #e9f3ff;
-        }
-
-        .poker-card.selected {
             background: #1473e6;
             color: white;
-        }
 
-        .host-controls {
-            display: none;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
-
-        .reveal-button {
-            background: #198754;
-            color: white;
-            border: none;
-            padding: 13px 25px;
-            border-radius: 7px;
             font-size: 16px;
-            margin-right: 10px;
-        }
-
-        .reset-button {
-            background: #6c757d;
-            color: white;
-            border: none;
-            padding: 13px 25px;
-            border-radius: 7px;
-            font-size: 16px;
+            font-weight: 600;
         }
 
         .message {
-            margin-top: 15px;
+            margin-top: 14px;
+
             color: #c62828;
         }
 
-        .revealed-message {
-            padding: 12px;
-            background: #e8f5e9;
-            border-radius: 7px;
-            margin-top: 20px;
+        /* =====================================================
+           ROOM HEADER
+           ===================================================== */
+
+        #roomScreen {
             display: none;
         }
 
-        .results-summary {
-            display: none;
-            margin-top: 25px;
-        }
+        .room-header {
+            min-height: 58px;
 
-        .summary-cards {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+
+            margin-bottom: 14px;
         }
 
-        .summary-card {
-            background: #f0f4f9;
+        .room-title {
+            margin: 0 0 5px;
+
+            font-size: 27px;
+        }
+
+        .room-subtitle {
+            margin: 0;
+
+            color: #667085;
+
+            font-size: 14px;
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 7px 12px;
+
+            background: #ecfdf3;
+            color: #027a48;
+
+            border-radius: 18px;
+
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+
+            background: #12b76a;
+
+            border-radius: 50%;
+        }
+
+        /* =====================================================
+           MAIN DESKTOP LAYOUT
+           ===================================================== */
+
+        .planning-layout {
+            display: grid;
+
+            grid-template-columns:
+                    minmax(650px, 2fr)
+                    minmax(320px, 0.78fr);
+
+            gap: 20px;
+
+            align-items: stretch;
+        }
+
+        .table-column {
+            min-width: 0;
+        }
+
+        /* =====================================================
+           POKER STAGE
+           ===================================================== */
+
+        .poker-stage {
+            position: relative;
+
+            width: 100%;
+
+            height: clamp(
+                    500px,
+                    calc(100vh - 210px),
+                    620px
+            );
+
+            min-height: 500px;
+
+            overflow: hidden;
+
+            border: 1px solid #e6ebf1;
+            border-radius: 16px;
+
+            background:
+                    radial-gradient(
+                            circle at center,
+                            #ffffff 0%,
+                            #f3f6fa 76%
+                    );
+        }
+
+        /* =====================================================
+           POKER TABLE
+           ===================================================== */
+
+        .poker-table {
+            position: absolute;
+
+            width: 61%;
+            height: 42%;
+
+            left: 50%;
+            top: 50%;
+
+            transform: translate(-50%, -50%);
+
+            border: 8px solid #70472c;
+            border-radius: 50%;
+
+            background:
+                    linear-gradient(
+                            145deg,
+                            #176b49,
+                            #0c5036
+                    );
+
+            box-shadow:
+                    0 8px 22px rgba(0, 0, 0, 0.18),
+                    inset 0 0 30px rgba(0, 0, 0, 0.15);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 25px;
+
+            text-align: center;
+
+            color: white;
+        }
+
+        .table-content {
+            width: 100%;
+        }
+
+        .table-title {
+            margin-bottom: 8px;
+
+            font-size: 23px;
+            font-weight: 700;
+        }
+
+        .table-status {
+            font-size: 14px;
+
+            opacity: 0.9;
+        }
+
+        /* =====================================================
+           PARTICIPANTS
+           ===================================================== */
+
+        .seat {
+            position: absolute;
+
+            width: 110px;
+
+            transform: translate(-50%, -50%);
+
+            text-align: center;
+
+            z-index: 5;
+
+            transition:
+                    left 0.3s ease,
+                    top 0.3s ease;
+        }
+
+        .avatar {
+            width: 46px;
+            height: 46px;
+
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 3px solid white;
+            border-radius: 50%;
+
+            background: #1473e6;
+            color: white;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            box-shadow:
+                    0 3px 9px rgba(0, 0, 0, 0.16);
+        }
+
+        .host-seat .avatar {
+            background: #7c3aed;
+        }
+
+        .current-seat .avatar {
+            outline: 3px solid rgba(20, 115, 230, 0.18);
+            outline-offset: 2px;
+        }
+
+        .participant-name {
+            max-width: 110px;
+
+            margin: 5px auto 0;
+
+            overflow: hidden;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .you-badge {
+            display: inline-block;
+
+            margin-top: 2px;
+
+            padding: 2px 6px;
+
             border-radius: 8px;
+
+            background: #eaf3ff;
+            color: #1473e6;
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .host-badge {
+            display: inline-block;
+
+            margin-top: 2px;
+
+            padding: 2px 6px;
+
+            border-radius: 8px;
+
+            background: #ede9fe;
+            color: #6d28d9;
+
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .vote-status {
+            margin-top: 4px;
+
+            font-size: 11px;
+
+            color: #667085;
+        }
+
+        .vote-status.voted {
+            color: #168557;
+
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           REVEALED CARD
+           ===================================================== */
+
+        .revealed-card {
+            width: 38px;
+            height: 48px;
+
+            margin: 5px auto 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: 2px solid #1473e6;
+            border-radius: 6px;
+
+            background: white;
+            color: #1473e6;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            box-shadow:
+                    0 2px 6px rgba(0, 0, 0, 0.12);
+
+            animation: revealCard 0.25s ease-out;
+        }
+
+        @keyframes revealCard {
+
+            from {
+                transform: scale(0.5) rotateY(90deg);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1) rotateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* =====================================================
+           RIGHT PANEL
+           ===================================================== */
+
+        .side-panel {
+            height: clamp(
+                    500px,
+                    calc(100vh - 210px),
+                    620px
+            );
+
+            min-height: 500px;
+
             padding: 18px;
-            min-width: 150px;
+
+            border: 1px solid #e3e8ef;
+            border-radius: 16px;
+
+            background: #f8fafc;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow-y: auto;
+        }
+
+        .side-section {
+            padding-bottom: 16px;
+
+            border-bottom: 1px solid #e2e7ed;
+        }
+
+        .section-title {
+            margin-bottom: 13px;
+
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* =====================================================
+           ESTIMATE CARDS
+           ===================================================== */
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                    repeat(5, minmax(45px, 1fr));
+
+            gap: 8px;
+        }
+
+        .poker-card {
+            width: 100%;
+            height: 58px;
+
+            border: 2px solid #1473e6;
+            border-radius: 8px;
+
+            background: white;
+            color: #1473e6;
+
+            font-size: 17px;
+            font-weight: 700;
+
+            transition:
+                    transform 0.12s ease,
+                    background 0.12s ease,
+                    color 0.12s ease;
+        }
+
+        .poker-card:hover:not(:disabled) {
+            transform: translateY(-3px);
+
+            background: #eef6ff;
+        }
+
+        .poker-card.selected {
+            transform: translateY(-3px);
+
+            background: #1473e6;
+            color: white;
+        }
+
+        .poker-card:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.5;
+        }
+
+        /* =====================================================
+           RESULTS
+           ===================================================== */
+
+        .results-panel {
+            display: none;
+
+            padding: 16px 0 2px;
+        }
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                    repeat(3, 1fr);
+
+            gap: 7px;
+
+            margin-bottom: 17px;
+        }
+
+        .summary-item {
+            min-width: 0;
+
+            padding: 11px 5px;
+
+            border: 1px solid #e1e6ec;
+            border-radius: 9px;
+
+            background: white;
+
             text-align: center;
         }
 
-        .summary-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
+        .summary-item span {
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #667085;
+
+            font-size: 10px;
         }
 
-        .summary-value {
-            font-size: 28px;
-            font-weight: bold;
+        .summary-item strong {
+            display: block;
+
+            overflow: hidden;
+
             color: #1473e6;
+
+            font-size: 20px;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
+
+        /* =====================================================
+           DISTRIBUTION
+           ===================================================== */
 
         .distribution-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
+            margin: 4px 0 10px;
+
+            font-size: 13px;
+            font-weight: 700;
         }
 
-        .vote-distribution {
-            max-width: 600px;
+        .distribution {
+            width: 100%;
         }
 
         .distribution-row {
-            display: flex;
+            display: grid;
+
+            grid-template-columns:
+                    25px
+                    minmax(60px, 1fr)
+                    72px;
+
+            gap: 6px;
+
             align-items: center;
-            margin-bottom: 10px;
-            gap: 12px;
+
+            margin-bottom: 7px;
         }
 
         .distribution-point {
-            width: 35px;
-            font-weight: bold;
             text-align: center;
+
+            font-size: 11px;
+            font-weight: 700;
         }
 
-        .distribution-bar-container {
-            flex: 1;
-            height: 28px;
-            background: #eef1f5;
-            border-radius: 5px;
+        .distribution-track {
+            height: 16px;
+
             overflow: hidden;
+
+            border-radius: 5px;
+
+            background: #e8edf3;
         }
 
         .distribution-bar {
             height: 100%;
+
+            border-radius: 5px;
+
             background: #1473e6;
-            min-width: 0;
-            transition: width 0.3s ease;
+
+            transition: width 0.35s ease;
         }
 
         .distribution-count {
-            width: 85px;
+            color: #667085;
+
+            font-size: 9px;
+
+            white-space: nowrap;
+        }
+
+        /* =====================================================
+           HOST CONTROLS
+           ===================================================== */
+
+        .host-controls {
+            display: none;
+
+            margin-top: auto;
+            padding-top: 15px;
+
+            border-top: 1px solid #e1e6ec;
+        }
+
+        .reveal-button,
+        .reset-button {
+            width: 100%;
+
+            padding: 11px;
+
+            border: none;
+            border-radius: 8px;
+
+            color: white;
+
             font-size: 14px;
+            font-weight: 700;
+        }
+
+        .reveal-button {
+            margin-bottom: 8px;
+
+            background: #168557;
+        }
+
+        .reset-button {
+            background: #667085;
+        }
+
+        /* =====================================================
+           FOOTER CREDIT
+           ===================================================== */
+
+        .footer-credit {
+            position: fixed;
+
+            left: 0;
+            right: 0;
+            bottom: 4px;
+
+            z-index: 50;
+
+            text-align: center;
+
+            color: #98a2b3;
+
+            font-size: 10px;
+            font-weight: 400;
+
+            letter-spacing: 0.2px;
+
+            pointer-events: none;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 1050px) {
+
+            .planning-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .poker-stage {
+                height: 520px;
+            }
+
+            .side-panel {
+                height: auto;
+                min-height: auto;
+
+                overflow: visible;
+            }
+
+            .host-controls {
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .header {
+                height: 58px;
+
+                padding: 0 15px;
+
+                font-size: 19px;
+            }
+
+            .container {
+                margin-top: 10px;
+
+                padding: 0 8px 20px;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .room-header {
+                display: block;
+            }
+
+            .live-indicator {
+                margin-top: 10px;
+            }
+
+            .poker-stage {
+                height: 470px;
+            }
+
+            .poker-table {
+                width: 57%;
+                height: 33%;
+
+                border-width: 6px;
+            }
+
+            .table-title {
+                font-size: 16px;
+            }
+
+            .table-status {
+                font-size: 11px;
+            }
+
+            .seat {
+                width: 82px;
+            }
+
+            .avatar {
+                width: 38px;
+                height: 38px;
+
+                font-size: 11px;
+            }
+
+            .participant-name {
+                max-width: 82px;
+
+                font-size: 10px;
+            }
+
+            .vote-status {
+                font-size: 9px;
+            }
+
+            .revealed-card {
+                width: 34px;
+                height: 42px;
+
+                font-size: 14px;
+            }
+
+            .cards {
+                grid-template-columns:
+                        repeat(5, 1fr);
+            }
+
+            .poker-card {
+                height: 52px;
+
+                font-size: 15px;
+            }
+
+            .footer-credit {
+                bottom: 2px;
+
+                font-size: 9px;
+            }
         }
 
     </style>
 </head>
 
+
 <body>
 
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
 <div class="header">
-    🃏 DV Planning Poker
+
+    <span class="header-icon">
+        🃏
+    </span>
+
+    <span>
+        DV Refinement Poker
+    </span>
+
 </div>
+
 
 <div class="container">
 
-    <!-- JOIN SCREEN -->
+
+    <!-- =================================================
+         JOIN SCREEN
+         ================================================= -->
 
     <div id="joinScreen"
-         class="card join-box">
+         class="panel join-box">
 
-        <h1>Join Sprint Planning</h1>
+        <h1>
+            Join Backlog Refinement
+        </h1>
 
         <p>
-            Enter your name to join the planning room.
+            Enter your name to take a seat at the table.
         </p>
 
         <input
@@ -294,7 +904,9 @@
         <button
                 class="primary-button"
                 onclick="joinRoom()">
-            Join Room
+
+            Join Table
+
         </button>
 
         <div id="joinError"
@@ -304,115 +916,257 @@
     </div>
 
 
-    <!-- ROOM SCREEN -->
+    <!-- =================================================
+         REFINEMENT ROOM
+         ================================================= -->
 
     <div id="roomScreen"
-         class="card room">
+         class="panel">
 
-        <h1>Sprint Planning</h1>
+        <!-- ROOM HEADER -->
 
-        <div id="hostMessage"></div>
+        <div class="room-header">
 
-        <div class="section-title">
-            Participants
-        </div>
+            <div>
 
-        <div id="participants"
-             class="participants">
-        </div>
+                <h1 class="room-title">
+                    Backlog Refinement
+                </h1>
 
-
-        <div class="section-title">
-            Choose your estimate
-        </div>
-
-        <div class="cards">
-
-            <button class="poker-card"
-                    onclick="vote(this, '0')">0</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '1')">1</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '2')">2</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '3')">3</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '5')">5</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '8')">8</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '13')">13</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '21')">21</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '?')">?</button>
-
-            <button class="poker-card"
-                    onclick="vote(this, '☕')">☕</button>
-
-        </div>
-
-
-        <div id="revealedMessage"
-             class="revealed-message">
-
-            Votes revealed!
-
-        </div>
-        <div id="resultsSummary" class="results-summary">
-
-            <div class="summary-cards">
-
-                <div class="summary-card">
-                    <div class="summary-label">Average</div>
-                    <div id="averageVote" class="summary-value">-</div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="summary-label">Most Voted</div>
-                    <div id="mostVoted" class="summary-value">-</div>
-                </div>
-
-                <div class="summary-card">
-                    <div class="summary-label">Total Votes</div>
-                    <div id="totalVotes" class="summary-value">0</div>
-                </div>
+                <p id="hostMessage"
+                   class="room-subtitle">
+                </p>
 
             </div>
 
-            <div class="distribution-title">
-                Vote Distribution
-            </div>
 
-            <div id="voteDistribution"
-                 class="vote-distribution">
+            <div class="live-indicator">
+
+                <span class="live-dot"></span>
+
+                Live Room
+
             </div>
 
         </div>
 
 
-        <div id="hostControls"
-             class="host-controls">
+        <!-- =================================================
+             MAIN TWO COLUMN LAYOUT
+             ================================================= -->
 
-            <button
-                    class="reveal-button"
-                    onclick="revealVotes()">
-                Reveal Votes
-            </button>
+        <div class="planning-layout">
 
-            <button
-                    class="reset-button"
-                    onclick="resetVotes()">
-                Reset / Next Round
-            </button>
+
+            <!-- =============================================
+                 LEFT: POKER TABLE
+                 ============================================= -->
+
+            <div class="table-column">
+
+                <div id="pokerStage"
+                     class="poker-stage">
+
+                    <div id="participants">
+                    </div>
+
+
+                    <div class="poker-table">
+
+                        <div class="table-content">
+
+                            <div id="waitingContent">
+
+                                <div id="tableTitle"
+                                     class="table-title">
+
+                                    DV Refinement Poker
+
+                                </div>
+
+                                <div id="tableStatus"
+                                     class="table-status">
+
+                                    Waiting for votes...
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =============================================
+                 RIGHT: VOTING + RESULTS
+                 ============================================= -->
+
+            <div class="side-panel">
+
+
+                <!-- ESTIMATE -->
+
+                <div class="side-section">
+
+                    <div class="section-title">
+                        Choose your estimate
+                    </div>
+
+
+                    <div class="cards">
+
+                        <button class="poker-card"
+                                onclick="vote(this, '0')">
+                            0
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '1')">
+                            1
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '2')">
+                            2
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '3')">
+                            3
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '5')">
+                            5
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '8')">
+                            8
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '13')">
+                            13
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '21')">
+                            21
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '?')">
+                            ?
+                        </button>
+
+                        <button class="poker-card"
+                                onclick="vote(this, '☕')">
+                            ☕
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RESULTS -->
+
+                <div id="resultsPanel"
+                     class="results-panel">
+
+                    <div class="section-title">
+                        Round Results
+                    </div>
+
+
+                    <div class="summary-grid">
+
+                        <div class="summary-item">
+
+                            <span>
+                                Average
+                            </span>
+
+                            <strong id="averageVote">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Most Voted
+                            </span>
+
+                            <strong id="mostVoted">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <span>
+                                Total Votes
+                            </span>
+
+                            <strong id="totalVotes">
+                                -
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="distribution-title">
+                        Vote Distribution
+                    </div>
+
+
+                    <div id="voteDistribution"
+                         class="distribution">
+                    </div>
+
+                </div>
+
+
+                <!-- HOST CONTROLS -->
+
+                <div id="hostControls"
+                     class="host-controls">
+
+                    <button
+                            id="revealButton"
+                            class="reveal-button"
+                            onclick="revealVotes()">
+
+                        Reveal Votes
+
+                    </button>
+
+
+                    <button
+                            id="resetButton"
+                            class="reset-button"
+                            onclick="resetVotes()">
+
+                        Next Round
+
+                    </button>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -421,11 +1175,31 @@
 </div>
 
 
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<div class="footer-credit">
+    Designed and developed by Eswar Ramineni
+</div>
+
+
 <script>
 
     let socket;
+
     let joined = false;
+
     let revealed = false;
+
+    let previousRevealed = false;
+
+    let joinedName = "";
+
+
+    /* =====================================================
+       WEBSOCKET
+       ===================================================== */
 
     function connect() {
 
@@ -434,38 +1208,55 @@
                 ? "wss:"
                 : "ws:";
 
-        socket = new WebSocket(
-            protocol +
-            "//" +
-            window.location.host +
-            "/ws"
-        );
+
+        socket =
+            new WebSocket(
+                protocol +
+                "//" +
+                window.location.host +
+                "/ws"
+            );
+
 
         socket.onopen = function () {
-            console.log("WebSocket connected");
+
+            console.log(
+                "Refinement Poker WebSocket connected"
+            );
         };
+
 
         socket.onerror = function (error) {
-            console.error("WebSocket error:", error);
 
-            document.getElementById("joinError")
+            console.error(
+                "WebSocket error:",
+                error
+            );
+
+
+            document
+                .getElementById("joinError")
                 .innerText =
-                "Unable to connect to the planning room.";
+                "Unable to connect to the refinement room.";
         };
+
 
         socket.onmessage = function (event) {
 
-            console.log("Received:", event.data);
+            const data =
+                JSON.parse(event.data);
 
-            const data = JSON.parse(event.data);
 
             if (data.type === "ERROR") {
 
-                document.getElementById("joinError")
-                    .innerText = data.message;
+                document
+                    .getElementById("joinError")
+                    .innerText =
+                    data.message;
 
                 return;
             }
+
 
             if (data.type === "STATE") {
 
@@ -473,65 +1264,88 @@
 
                     joined = true;
 
-                    document.getElementById("joinScreen")
-                        .style.display = "none";
 
-                    document.getElementById("roomScreen")
-                        .style.display = "block";
+                    document
+                        .getElementById("joinScreen")
+                        .style.display =
+                        "none";
+
+
+                    document
+                        .getElementById("roomScreen")
+                        .style.display =
+                        "block";
                 }
+
 
                 renderState(data);
             }
         };
 
+
         socket.onclose = function () {
 
-            console.log("WebSocket disconnected");
+            console.log(
+                "Refinement Poker WebSocket disconnected"
+            );
         };
     }
 
 
+    /* =====================================================
+       JOIN
+       ===================================================== */
+
     function joinRoom() {
 
         const name =
-            document.getElementById("nameInput")
+            document
+                .getElementById("nameInput")
                 .value
                 .trim();
 
+
         if (!name) {
 
-            document.getElementById("joinError")
+            document
+                .getElementById("joinError")
                 .innerText =
                 "Please enter your name.";
 
             return;
         }
 
+
         if (!socket ||
             socket.readyState !== WebSocket.OPEN) {
 
-            document.getElementById("joinError")
+            document
+                .getElementById("joinError")
                 .innerText =
-                "Connecting to server... please click Join again.";
-
-            console.log(
-                "WebSocket state:",
-                socket ? socket.readyState : "not created"
-            );
+                "Connecting to server. Please try again.";
 
             return;
         }
 
-        console.log("Joining as:", name);
+
+        joinedName = name;
+
 
         socket.send(
             JSON.stringify({
+
                 action: "JOIN",
+
                 name: name
+
             })
         );
     }
 
+
+    /* =====================================================
+       VOTE
+       ===================================================== */
 
     function vote(button, value) {
 
@@ -539,22 +1353,37 @@
             return;
         }
 
+
         document
             .querySelectorAll(".poker-card")
-            .forEach(card =>
-                card.classList.remove("selected")
+            .forEach(
+                card =>
+                    card.classList.remove(
+                        "selected"
+                    )
             );
 
-        button.classList.add("selected");
+
+        button
+            .classList
+            .add("selected");
+
 
         socket.send(
             JSON.stringify({
+
                 action: "VOTE",
+
                 vote: value
+
             })
         );
     }
 
+
+    /* =====================================================
+       REVEAL
+       ===================================================== */
 
     function revealVotes() {
 
@@ -566,13 +1395,14 @@
     }
 
 
+    /* =====================================================
+       RESET
+       ===================================================== */
+
     function resetVotes() {
 
-        document
-            .querySelectorAll(".poker-card")
-            .forEach(card =>
-                card.classList.remove("selected")
-            );
+        clearSelectedCard();
+
 
         socket.send(
             JSON.stringify({
@@ -582,75 +1412,98 @@
     }
 
 
+    function clearSelectedCard() {
+
+        document
+            .querySelectorAll(".poker-card")
+            .forEach(
+                card =>
+                    card.classList.remove(
+                        "selected"
+                    )
+            );
+    }
+
+
+    /* =====================================================
+       MAIN STATE RENDER
+       ===================================================== */
+
     function renderState(data) {
 
-        revealed = data.revealed;
-
-        const participants =
-            document.getElementById("participants");
-
-        participants.innerHTML = "";
-
-        data.participants.forEach(person => {
-
-            const div =
-                document.createElement("div");
-
-            div.className = "participant";
-
-            let html =
-                "<div class='participant-name'>" +
-                escapeHtml(person.name) +
-                "</div>";
-
-            if (person.host) {
-
-                html +=
-                    "<div class='host'>HOST</div>";
-            }
-
-            if (data.revealed) {
-
-                html +=
-                    "<div class='vote-result'>" +
-                    (person.vote ?? "-") +
-                    "</div>";
-
-            } else {
-
-                html +=
-                    "<div class='status'>" +
-                    (person.voted
-                        ? "✅ Voted"
-                        : "⏳ Waiting") +
-                    "</div>";
-            }
-
-            div.innerHTML = html;
-
-            participants.appendChild(div);
-        });
+        previousRevealed =
+            revealed;
 
 
-        document.getElementById("hostControls")
-            .style.display =
+        revealed =
+            data.revealed;
+
+
+        if (
+            previousRevealed &&
+            !revealed
+        ) {
+
+            clearSelectedCard();
+        }
+
+
+        renderParticipants(
+            data.participants,
+            data.revealed
+        );
+
+
+        renderTableStatus(data);
+
+        renderResults(data);
+
+        renderDistribution(data);
+
+
+        const hostControls =
+            document.getElementById(
+                "hostControls"
+            );
+
+
+        hostControls.style.display =
             data.youAreHost
                 ? "block"
                 : "none";
 
 
-        document.getElementById("hostMessage")
+        if (data.youAreHost) {
+
+            document
+                .getElementById(
+                    "revealButton"
+                )
+                .style.display =
+                data.revealed
+                    ? "none"
+                    : "block";
+
+
+            document
+                .getElementById(
+                    "resetButton"
+                )
+                .style.display =
+                data.revealed
+                    ? "block"
+                    : "none";
+        }
+
+
+        document
+            .getElementById("hostMessage")
             .innerHTML =
             data.youAreHost
+
                 ? "<strong>You are the host.</strong> Reveal when everyone has voted."
-                : "Select your estimate. Votes stay hidden until the host reveals them.";
 
-
-        document.getElementById("revealedMessage")
-            .style.display =
-            data.revealed
-                ? "block"
-                : "none";
+                : "Choose your estimate. Your vote stays hidden until the host reveals it.";
 
 
         document
@@ -660,198 +1513,669 @@
                 card.disabled =
                     data.revealed;
             });
-        renderResults(data);
     }
+
+
+    /* =====================================================
+       PARTICIPANTS AROUND TABLE
+       ===================================================== */
+
+    function renderParticipants(
+        participants,
+        isRevealed
+    ) {
+
+        const container =
+            document.getElementById(
+                "participants"
+            );
+
+
+        container.innerHTML = "";
+
+
+        const count =
+            participants.length;
+
+
+        participants.forEach(
+            (person, index) => {
+
+                const seat =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                const isCurrentUser =
+                    joinedName &&
+                    person.name
+                        .toLowerCase() ===
+                    joinedName
+                        .toLowerCase();
+
+
+                seat.className =
+                    "seat" +
+                    (
+                        person.host
+                            ? " host-seat"
+                            : ""
+                    ) +
+                    (
+                        isCurrentUser
+                            ? " current-seat"
+                            : ""
+                    );
+
+
+                const angle =
+                    count === 1
+
+                        ? 90
+
+                        : 90 +
+                          (
+                              360 /
+                              count
+                          ) * index;
+
+
+                const radians =
+                    angle *
+                    Math.PI /
+                    180;
+
+
+                const radiusX = 42;
+
+                const radiusY = 33;
+
+
+                const left =
+                    50 +
+                    radiusX *
+                    Math.cos(radians);
+
+
+                const top =
+                    50 +
+                    radiusY *
+                    Math.sin(radians);
+
+
+                seat.style.left =
+                    left + "%";
+
+
+                seat.style.top =
+                    top + "%";
+
+
+                const initials =
+                    getInitials(
+                        person.name
+                    );
+
+
+                let details;
+
+
+                if (isRevealed) {
+
+                    details = `
+
+                        <div class="revealed-card">
+
+                            ${escapeHtml(
+                                person.vote ?? "-"
+                            )}
+
+                        </div>
+
+                    `;
+
+                } else {
+
+                    details = `
+
+                        <div class="
+                            vote-status
+                            ${
+                                person.voted
+                                    ? "voted"
+                                    : ""
+                            }
+                        ">
+
+                            ${
+                                person.voted
+                                    ? "✓ Voted"
+                                    : "Waiting"
+                            }
+
+                        </div>
+
+                    `;
+                }
+
+
+                seat.innerHTML = `
+
+                    <div class="avatar">
+
+                        ${escapeHtml(
+                            initials
+                        )}
+
+                    </div>
+
+
+                    <div class="participant-name">
+
+                        ${escapeHtml(
+                            person.name
+                        )}
+
+                    </div>
+
+
+                    ${
+                        person.host
+
+                            ? `
+                                <div class="host-badge">
+                                    HOST
+                                </div>
+                              `
+
+                            : ""
+                    }
+
+
+                    ${
+                        isCurrentUser
+
+                            ? `
+                                <div class="you-badge">
+                                    YOU
+                                </div>
+                              `
+
+                            : ""
+                    }
+
+
+                    ${details}
+
+                `;
+
+
+                container.appendChild(
+                    seat
+                );
+            }
+        );
+    }
+
+
+    /* =====================================================
+       TABLE STATUS
+       ===================================================== */
+
+    function renderTableStatus(data) {
+
+        const total =
+            data.participants.length;
+
+
+        const voted =
+            data.participants
+                .filter(
+                    person =>
+                        person.voted
+                )
+                .length;
+
+
+        const tableTitle =
+            document.getElementById(
+                "tableTitle"
+            );
+
+
+        const tableStatus =
+            document.getElementById(
+                "tableStatus"
+            );
+
+
+        if (data.revealed) {
+
+            tableTitle.innerText =
+                "Votes Revealed";
+
+
+            tableStatus.innerText =
+                "Review the estimates and discuss differences.";
+
+        } else {
+
+            tableTitle.innerText =
+                "DV Refinement Poker";
+
+
+            if (
+                total > 0 &&
+                voted === total
+            ) {
+
+                tableStatus.innerText =
+                    "All participants have voted ✓";
+
+            } else {
+
+                tableStatus.innerText =
+                    voted +
+                    " / " +
+                    total +
+                    " voted";
+            }
+        }
+    }
+
+
+    /* =====================================================
+       RESULTS
+       ===================================================== */
 
     function renderResults(data) {
 
-        const resultsSummary =
-            document.getElementById("resultsSummary");
+        const resultsPanel =
+            document.getElementById(
+                "resultsPanel"
+            );
+
 
         if (!data.revealed) {
 
-            resultsSummary.style.display = "none";
+            resultsPanel.style.display =
+                "none";
 
             return;
         }
 
-        resultsSummary.style.display = "block";
+
+        resultsPanel.style.display =
+            "block";
 
 
-        // Only participants who actually voted
         const votes =
             data.participants
-                .filter(person =>
-                    person.vote !== null &&
-                    person.vote !== undefined
+                .filter(
+                    person =>
+                        person.vote !== null &&
+                        person.vote !== undefined
                 )
-                .map(person => person.vote);
+                .map(
+                    person =>
+                        person.vote
+                );
 
 
-        document.getElementById("totalVotes")
-            .innerText = votes.length;
+        document
+            .getElementById(
+                "totalVotes"
+            )
+            .innerText =
+            votes.length;
 
-
-        // -------------------------
-        // Average numeric votes
-        // -------------------------
 
         const numericVotes =
             votes
-                .map(vote => Number(vote))
-                .filter(vote =>
-                    !Number.isNaN(vote)
+                .map(
+                    vote =>
+                        Number(vote)
+                )
+                .filter(
+                    vote =>
+                        !Number.isNaN(vote)
                 );
+
 
         if (numericVotes.length > 0) {
 
-            const average =
+            const numericTotal =
                 numericVotes.reduce(
-                    (sum, vote) => sum + vote,
+                    (
+                        sum,
+                        vote
+                    ) =>
+                        sum + vote,
                     0
-                ) / numericVotes.length;
+                );
 
-            document.getElementById("averageVote")
+
+            const average =
+                numericTotal /
+                numericVotes.length;
+
+
+            document
+                .getElementById(
+                    "averageVote"
+                )
                 .innerText =
-                Number.isInteger(average)
+
+                Number.isInteger(
+                    average
+                )
+
                     ? average
+
                     : average.toFixed(1);
 
         } else {
 
-            document.getElementById("averageVote")
-                .innerText = "-";
+            document
+                .getElementById(
+                    "averageVote"
+                )
+                .innerText =
+                "-";
         }
 
 
-        // -------------------------
-        // Distribution
-        // -------------------------
-
-        const voteOrder =
-            ["0", "1", "2", "3", "5", "8",
-                "13", "21", "?", "☕"];
-
         const counts = {};
 
-        voteOrder.forEach(vote => {
-            counts[vote] = 0;
-        });
 
         votes.forEach(vote => {
 
-            if (counts[vote] !== undefined) {
-                counts[vote]++;
-            }
+            counts[vote] =
+                (
+                    counts[vote] ||
+                    0
+                ) + 1;
         });
 
 
-        // -------------------------
-        // Most voted
-        // -------------------------
+        let highestCount = 0;
 
-        let maxCount = 0;
 
         Object.values(counts)
             .forEach(count => {
 
-                if (count > maxCount) {
-                    maxCount = count;
-                }
+                highestCount =
+                    Math.max(
+                        highestCount,
+                        count
+                    );
             });
 
+
+        const voteOrder =
+            [
+                "0",
+                "1",
+                "2",
+                "3",
+                "5",
+                "8",
+                "13",
+                "21",
+                "?",
+                "☕"
+            ];
+
+
         const mostVoted =
-            voteOrder.filter(
-                vote =>
-                    counts[vote] === maxCount &&
-                    maxCount > 0
-            );
+            voteOrder
+                .filter(
+                    vote =>
+                        counts[vote] ===
+                        highestCount &&
+                        highestCount > 0
+                );
 
-        document.getElementById("mostVoted")
+
+        document
+            .getElementById(
+                "mostVoted"
+            )
             .innerText =
-            mostVoted.length > 0
+
+            mostVoted.length
+
                 ? mostVoted.join(" / ")
+
                 : "-";
+    }
 
 
-        // -------------------------
-        // Graph
-        // -------------------------
+    /* =====================================================
+       DISTRIBUTION
+       ===================================================== */
+
+    function renderDistribution(data) {
 
         const distribution =
             document.getElementById(
                 "voteDistribution"
             );
 
+
         distribution.innerHTML = "";
+
+
+        if (!data.revealed) {
+            return;
+        }
+
+
+        const voteOrder =
+            [
+                "0",
+                "1",
+                "2",
+                "3",
+                "5",
+                "8",
+                "13",
+                "21",
+                "?",
+                "☕"
+            ];
+
+
+        const votes =
+            data.participants
+                .filter(
+                    person =>
+                        person.vote !== null &&
+                        person.vote !== undefined
+                )
+                .map(
+                    person =>
+                        person.vote
+                );
+
+
+        const counts = {};
+
+
+        voteOrder.forEach(
+            vote => {
+
+                counts[vote] = 0;
+            }
+        );
+
+
+        votes.forEach(vote => {
+
+            if (
+                counts[vote] !==
+                undefined
+            ) {
+
+                counts[vote]++;
+            }
+        });
+
 
         voteOrder.forEach(vote => {
 
-            if (counts[vote] === 0) {
+            const count =
+                counts[vote];
+
+
+            if (count === 0) {
                 return;
             }
 
+
             const percentage =
-                votes.length === 0
-                    ? 0
-                    : (counts[vote] / votes.length) * 100;
+                votes.length
+
+                    ? (
+                        count /
+                        votes.length
+                      ) * 100
+
+                    : 0;
+
 
             const row =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             row.className =
                 "distribution-row";
 
+
             row.innerHTML = `
-            <div class="distribution-point">
-                ${vote}
-            </div>
 
-            <div class="distribution-bar-container">
-                <div
-                    class="distribution-bar"
-                    style="width:${percentage}%">
+                <div class="distribution-point">
+
+                    ${escapeHtml(
+                        vote
+                    )}
+
                 </div>
-            </div>
 
-            <div class="distribution-count">
-                ${counts[vote]} vote${counts[vote] !== 1 ? "s" : ""}
-                (${percentage.toFixed(0)}%)
-            </div>
-        `;
 
-            distribution.appendChild(row);
+                <div class="distribution-track">
+
+                    <div
+                        class="distribution-bar"
+                        style="width:${percentage}%;">
+                    </div>
+
+                </div>
+
+
+                <div class="distribution-count">
+
+                    ${count}
+                    vote${count === 1 ? "" : "s"}
+
+                    (${percentage.toFixed(0)}%)
+
+                </div>
+
+            `;
+
+
+            distribution.appendChild(
+                row
+            );
         });
     }
 
 
+    /* =====================================================
+       INITIALS
+       ===================================================== */
+
+    function getInitials(name) {
+
+        const parts =
+            name
+                .trim()
+                .split(/\s+/);
+
+
+        if (parts.length === 1) {
+
+            return parts[0]
+                .substring(0, 2)
+                .toUpperCase();
+        }
+
+
+        return (
+            parts[0][0] +
+            parts[
+                parts.length - 1
+            ][0]
+        ).toUpperCase();
+    }
+
+
+    /* =====================================================
+       ESCAPE HTML
+       ===================================================== */
+
     function escapeHtml(value) {
 
         const div =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
-        div.innerText = value;
+
+        div.innerText =
+            String(value);
+
 
         return div.innerHTML;
     }
 
 
+    /* =====================================================
+       ENTER TO JOIN
+       ===================================================== */
+
     document
-        .getElementById("nameInput")
+        .getElementById(
+            "nameInput"
+        )
         .addEventListener(
             "keydown",
             function (event) {
 
-                if (event.key === "Enter") {
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
                     joinRoom();
                 }
             }
         );
 
 
+    /* =====================================================
+       START CONNECTION
+       ===================================================== */
+
     connect();
 
 </script>
 
+
 </body>
+
 </html>
