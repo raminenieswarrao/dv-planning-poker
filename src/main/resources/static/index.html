@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>DV Planning Poker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #ddd;
+            padding: 18px 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow:
+                    0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .join-box {
+            max-width: 450px;
+            margin: 70px auto;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            font-size: 16px;
+            border: 1px solid #bbb;
+            border-radius: 7px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .primary-button {
+            background: #1473e6;
+            border: none;
+            color: white;
+            padding: 12px 22px;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        .room {
+            display: none;
+        }
+
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .participants {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .participant {
+            min-width: 150px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f0f4f9;
+            text-align: center;
+        }
+
+        .participant-name {
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .host {
+            font-size: 12px;
+            color: #1473e6;
+        }
+
+        .status {
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        .vote-result {
+            margin-top: 8px;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .poker-card {
+            width: 65px;
+            height: 90px;
+            background: white;
+            border: 2px solid #1473e6;
+            border-radius: 8px;
+            color: #1473e6;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .poker-card:hover {
+            background: #e9f3ff;
+        }
+
+        .poker-card.selected {
+            background: #1473e6;
+            color: white;
+        }
+
+        .host-controls {
+            display: none;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .reveal-button {
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 7px;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .reset-button {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 13px 25px;
+            border-radius: 7px;
+            font-size: 16px;
+        }
+
+        .message {
+            margin-top: 15px;
+            color: #c62828;
+        }
+
+        .revealed-message {
+            padding: 12px;
+            background: #e8f5e9;
+            border-radius: 7px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .results-summary {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .summary-cards {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: #f0f4f9;
+            border-radius: 8px;
+            padding: 18px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1473e6;
+        }
+
+        .distribution-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .vote-distribution {
+            max-width: 600px;
+        }
+
+        .distribution-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .distribution-point {
+            width: 35px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .distribution-bar-container {
+            flex: 1;
+            height: 28px;
+            background: #eef1f5;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .distribution-bar {
+            height: 100%;
+            background: #1473e6;
+            min-width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .distribution-count {
+            width: 85px;
+            font-size: 14px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    🃏 DV Planning Poker
+</div>
+
+<div class="container">
+
+    <!-- JOIN SCREEN -->
+
+    <div id="joinScreen"
+         class="card join-box">
+
+        <h1>Join Sprint Planning</h1>
+
+        <p>
+            Enter your name to join the planning room.
+        </p>
+
+        <input
+                id="nameInput"
+                type="text"
+                placeholder="Your name"
+                maxlength="40"
+                autocomplete="off"
+        >
+
+        <button
+                class="primary-button"
+                onclick="joinRoom()">
+            Join Room
+        </button>
+
+        <div id="joinError"
+             class="message">
+        </div>
+
+    </div>
+
+
+    <!-- ROOM SCREEN -->
+
+    <div id="roomScreen"
+         class="card room">
+
+        <h1>Sprint Planning</h1>
+
+        <div id="hostMessage"></div>
+
+        <div class="section-title">
+            Participants
+        </div>
+
+        <div id="participants"
+             class="participants">
+        </div>
+
+
+        <div class="section-title">
+            Choose your estimate
+        </div>
+
+        <div class="cards">
+
+            <button class="poker-card"
+                    onclick="vote(this, '0')">0</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '1')">1</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '2')">2</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '3')">3</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '5')">5</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '8')">8</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '13')">13</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '21')">21</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '?')">?</button>
+
+            <button class="poker-card"
+                    onclick="vote(this, '☕')">☕</button>
+
+        </div>
+
+
+        <div id="revealedMessage"
+             class="revealed-message">
+
+            Votes revealed!
+
+        </div>
+        <div id="resultsSummary" class="results-summary">
+
+            <div class="summary-cards">
+
+                <div class="summary-card">
+                    <div class="summary-label">Average</div>
+                    <div id="averageVote" class="summary-value">-</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Most Voted</div>
+                    <div id="mostVoted" class="summary-value">-</div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="summary-label">Total Votes</div>
+                    <div id="totalVotes" class="summary-value">0</div>
+                </div>
+
+            </div>
+
+            <div class="distribution-title">
+                Vote Distribution
+            </div>
+
+            <div id="voteDistribution"
+                 class="vote-distribution">
+            </div>
+
+        </div>
+
+
+        <div id="hostControls"
+             class="host-controls">
+
+            <button
+                    class="reveal-button"
+                    onclick="revealVotes()">
+                Reveal Votes
+            </button>
+
+            <button
+                    class="reset-button"
+                    onclick="resetVotes()">
+                Reset / Next Round
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    let socket;
+    let joined = false;
+    let revealed = false;
+
+    function connect() {
+
+        const protocol =
+            window.location.protocol === "https:"
+                ? "wss:"
+                : "ws:";
+
+        socket = new WebSocket(
+            protocol +
+            "//" +
+            window.location.host +
+            "/ws"
+        );
+
+        socket.onopen = function () {
+            console.log("WebSocket connected");
+        };
+
+        socket.onerror = function (error) {
+            console.error("WebSocket error:", error);
+
+            document.getElementById("joinError")
+                .innerText =
+                "Unable to connect to the planning room.";
+        };
+
+        socket.onmessage = function (event) {
+
+            console.log("Received:", event.data);
+
+            const data = JSON.parse(event.data);
+
+            if (data.type === "ERROR") {
+
+                document.getElementById("joinError")
+                    .innerText = data.message;
+
+                return;
+            }
+
+            if (data.type === "STATE") {
+
+                if (!joined) {
+
+                    joined = true;
+
+                    document.getElementById("joinScreen")
+                        .style.display = "none";
+
+                    document.getElementById("roomScreen")
+                        .style.display = "block";
+                }
+
+                renderState(data);
+            }
+        };
+
+        socket.onclose = function () {
+
+            console.log("WebSocket disconnected");
+        };
+    }
+
+
+    function joinRoom() {
+
+        const name =
+            document.getElementById("nameInput")
+                .value
+                .trim();
+
+        if (!name) {
+
+            document.getElementById("joinError")
+                .innerText =
+                "Please enter your name.";
+
+            return;
+        }
+
+        if (!socket ||
+            socket.readyState !== WebSocket.OPEN) {
+
+            document.getElementById("joinError")
+                .innerText =
+                "Connecting to server... please click Join again.";
+
+            console.log(
+                "WebSocket state:",
+                socket ? socket.readyState : "not created"
+            );
+
+            return;
+        }
+
+        console.log("Joining as:", name);
+
+        socket.send(
+            JSON.stringify({
+                action: "JOIN",
+                name: name
+            })
+        );
+    }
+
+
+    function vote(button, value) {
+
+        if (revealed) {
+            return;
+        }
+
+        document
+            .querySelectorAll(".poker-card")
+            .forEach(card =>
+                card.classList.remove("selected")
+            );
+
+        button.classList.add("selected");
+
+        socket.send(
+            JSON.stringify({
+                action: "VOTE",
+                vote: value
+            })
+        );
+    }
+
+
+    function revealVotes() {
+
+        socket.send(
+            JSON.stringify({
+                action: "REVEAL"
+            })
+        );
+    }
+
+
+    function resetVotes() {
+
+        document
+            .querySelectorAll(".poker-card")
+            .forEach(card =>
+                card.classList.remove("selected")
+            );
+
+        socket.send(
+            JSON.stringify({
+                action: "RESET"
+            })
+        );
+    }
+
+
+    function renderState(data) {
+
+        revealed = data.revealed;
+
+        const participants =
+            document.getElementById("participants");
+
+        participants.innerHTML = "";
+
+        data.participants.forEach(person => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "participant";
+
+            let html =
+                "<div class='participant-name'>" +
+                escapeHtml(person.name) +
+                "</div>";
+
+            if (person.host) {
+
+                html +=
+                    "<div class='host'>HOST</div>";
+            }
+
+            if (data.revealed) {
+
+                html +=
+                    "<div class='vote-result'>" +
+                    (person.vote ?? "-") +
+                    "</div>";
+
+            } else {
+
+                html +=
+                    "<div class='status'>" +
+                    (person.voted
+                        ? "✅ Voted"
+                        : "⏳ Waiting") +
+                    "</div>";
+            }
+
+            div.innerHTML = html;
+
+            participants.appendChild(div);
+        });
+
+
+        document.getElementById("hostControls")
+            .style.display =
+            data.youAreHost
+                ? "block"
+                : "none";
+
+
+        document.getElementById("hostMessage")
+            .innerHTML =
+            data.youAreHost
+                ? "<strong>You are the host.</strong> Reveal when everyone has voted."
+                : "Select your estimate. Votes stay hidden until the host reveals them.";
+
+
+        document.getElementById("revealedMessage")
+            .style.display =
+            data.revealed
+                ? "block"
+                : "none";
+
+
+        document
+            .querySelectorAll(".poker-card")
+            .forEach(card => {
+
+                card.disabled =
+                    data.revealed;
+            });
+        renderResults(data);
+    }
+
+    function renderResults(data) {
+
+        const resultsSummary =
+            document.getElementById("resultsSummary");
+
+        if (!data.revealed) {
+
+            resultsSummary.style.display = "none";
+
+            return;
+        }
+
+        resultsSummary.style.display = "block";
+
+
+        // Only participants who actually voted
+        const votes =
+            data.participants
+                .filter(person =>
+                    person.vote !== null &&
+                    person.vote !== undefined
+                )
+                .map(person => person.vote);
+
+
+        document.getElementById("totalVotes")
+            .innerText = votes.length;
+
+
+        // -------------------------
+        // Average numeric votes
+        // -------------------------
+
+        const numericVotes =
+            votes
+                .map(vote => Number(vote))
+                .filter(vote =>
+                    !Number.isNaN(vote)
+                );
+
+        if (numericVotes.length > 0) {
+
+            const average =
+                numericVotes.reduce(
+                    (sum, vote) => sum + vote,
+                    0
+                ) / numericVotes.length;
+
+            document.getElementById("averageVote")
+                .innerText =
+                Number.isInteger(average)
+                    ? average
+                    : average.toFixed(1);
+
+        } else {
+
+            document.getElementById("averageVote")
+                .innerText = "-";
+        }
+
+
+        // -------------------------
+        // Distribution
+        // -------------------------
+
+        const voteOrder =
+            ["0", "1", "2", "3", "5", "8",
+                "13", "21", "?", "☕"];
+
+        const counts = {};
+
+        voteOrder.forEach(vote => {
+            counts[vote] = 0;
+        });
+
+        votes.forEach(vote => {
+
+            if (counts[vote] !== undefined) {
+                counts[vote]++;
+            }
+        });
+
+
+        // -------------------------
+        // Most voted
+        // -------------------------
+
+        let maxCount = 0;
+
+        Object.values(counts)
+            .forEach(count => {
+
+                if (count > maxCount) {
+                    maxCount = count;
+                }
+            });
+
+        const mostVoted =
+            voteOrder.filter(
+                vote =>
+                    counts[vote] === maxCount &&
+                    maxCount > 0
+            );
+
+        document.getElementById("mostVoted")
+            .innerText =
+            mostVoted.length > 0
+                ? mostVoted.join(" / ")
+                : "-";
+
+
+        // -------------------------
+        // Graph
+        // -------------------------
+
+        const distribution =
+            document.getElementById(
+                "voteDistribution"
+            );
+
+        distribution.innerHTML = "";
+
+        voteOrder.forEach(vote => {
+
+            if (counts[vote] === 0) {
+                return;
+            }
+
+            const percentage =
+                votes.length === 0
+                    ? 0
+                    : (counts[vote] / votes.length) * 100;
+
+            const row =
+                document.createElement("div");
+
+            row.className =
+                "distribution-row";
+
+            row.innerHTML = `
+            <div class="distribution-point">
+                ${vote}
+            </div>
+
+            <div class="distribution-bar-container">
+                <div
+                    class="distribution-bar"
+                    style="width:${percentage}%">
+                </div>
+            </div>
+
+            <div class="distribution-count">
+                ${counts[vote]} vote${counts[vote] !== 1 ? "s" : ""}
+                (${percentage.toFixed(0)}%)
+            </div>
+        `;
+
+            distribution.appendChild(row);
+        });
+    }
+
+
+    function escapeHtml(value) {
+
+        const div =
+            document.createElement("div");
+
+        div.innerText = value;
+
+        return div.innerHTML;
+    }
+
+
+    document
+        .getElementById("nameInput")
+        .addEventListener(
+            "keydown",
+            function (event) {
+
+                if (event.key === "Enter") {
+                    joinRoom();
+                }
+            }
+        );
+
+
+    connect();
+
+</script>
+
+</body>
+</html>
