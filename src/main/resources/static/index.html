@@ -173,13 +173,13 @@
         }
 
         /* =====================================================
-           JOIN
+           CREATE / JOIN
            ===================================================== */
 
         .join-box {
-            max-width: 500px;
+            max-width: 520px;
 
-            margin: 80px auto;
+            margin: 65px auto;
         }
 
         .join-box h1 {
@@ -188,10 +188,23 @@
             font-size: 32px;
         }
 
-        .join-box p {
-            margin-bottom: 22px;
+        .join-box > p {
+            margin-bottom: 24px;
 
             color: #5b6472;
+
+            line-height: 1.5;
+        }
+
+        .field-label {
+            display: block;
+
+            margin-bottom: 7px;
+
+            color: #344054;
+
+            font-size: 12px;
+            font-weight: 700;
         }
 
         input {
@@ -210,18 +223,95 @@
             outline: none;
 
             border-color: #1473e6;
+
+            box-shadow:
+                    0 0 0 3px rgba(20, 115, 230, 0.08);
         }
 
-        .primary-button {
-            padding: 13px 24px;
+        .join-actions {
+            display: grid;
+
+            gap: 12px;
+        }
+
+        .create-button,
+        .join-button {
+            width: 100%;
+
+            padding: 13px 20px;
 
             border: none;
             border-radius: 8px;
 
+            font-size: 15px;
+            font-weight: 700;
+
+            transition:
+                    opacity 0.15s ease,
+                    transform 0.12s ease;
+        }
+
+        .create-button {
             background: #1473e6;
             color: white;
+        }
 
-            font-size: 16px;
+        .join-button {
+            background: #172033;
+            color: white;
+        }
+
+        .create-button:hover:not(:disabled),
+        .join-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .create-button:disabled,
+        .join-button:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.5;
+        }
+
+        .join-divider {
+            position: relative;
+
+            margin: 22px 0;
+
+            color: #98a2b3;
+
+            text-align: center;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .join-divider::before,
+        .join-divider::after {
+            content: "";
+
+            position: absolute;
+            top: 50%;
+
+            width: 42%;
+            height: 1px;
+
+            background: #e3e8ef;
+        }
+
+        .join-divider::before {
+            left: 0;
+        }
+
+        .join-divider::after {
+            right: 0;
+        }
+
+        .room-code-input {
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
             font-weight: 700;
         }
 
@@ -229,6 +319,20 @@
             margin-top: 14px;
 
             color: #c62828;
+
+            font-size: 13px;
+
+            line-height: 1.4;
+        }
+
+        .connection-message {
+            margin-top: 9px;
+
+            color: #667085;
+
+            font-size: 10px;
+
+            text-align: center;
         }
 
         /* =====================================================
@@ -240,7 +344,7 @@
         }
 
         .room-header {
-            min-height: 58px;
+            min-height: 68px;
 
             display: flex;
             justify-content: space-between;
@@ -262,6 +366,54 @@
             color: #667085;
 
             font-size: 14px;
+        }
+
+        .room-code-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
+
+            margin-top: 9px;
+        }
+
+        .room-code-label {
+            color: #667085;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .room-code-value {
+            padding: 6px 9px;
+
+            border: 1px solid #dbe6f3;
+            border-radius: 7px;
+
+            background: #eef6ff;
+            color: #1473e6;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            letter-spacing: 0.7px;
+        }
+
+        .copy-room-button {
+            padding: 6px 9px;
+
+            border: 1px solid #d0d5dd;
+            border-radius: 7px;
+
+            background: white;
+            color: #344054;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .copy-room-button:hover {
+            background: #f2f4f7;
         }
 
         .live-indicator {
@@ -320,7 +472,7 @@
 
             height: clamp(
                     500px,
-                    calc(100vh - 210px),
+                    calc(100vh - 220px),
                     620px
             );
 
@@ -498,6 +650,38 @@
         }
 
         /* =====================================================
+           HOST PARTICIPANT MODERATION
+           ===================================================== */
+
+        .remove-participant-button {
+            display: block;
+
+            margin: 5px auto 0;
+            padding: 3px 7px;
+
+            border: 1px solid #dc2626;
+            border-radius: 7px;
+
+            background: #fff5f5;
+            color: #c62828;
+
+            font-size: 9px;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .remove-participant-button:hover {
+            background: #fee2e2;
+        }
+
+        .remove-participant-button:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.5;
+        }
+
+        /* =====================================================
            PLAYED CARDS
            ===================================================== */
 
@@ -625,7 +809,7 @@
         .side-panel {
             height: clamp(
                     500px,
-                    calc(100vh - 210px),
+                    calc(100vh - 220px),
                     620px
             );
 
@@ -1168,12 +1352,20 @@
                 padding: 15px;
             }
 
+            .join-box {
+                margin-top: 35px;
+            }
+
+            .join-box h1 {
+                font-size: 27px;
+            }
+
             .room-header {
                 display: block;
             }
 
             .live-indicator {
-                margin-top: 10px;
+                margin-top: 12px;
             }
 
             .poker-stage {
@@ -1214,6 +1406,12 @@
 
             .vote-status {
                 font-size: 9px;
+            }
+
+            .remove-participant-button {
+                padding: 2px 5px;
+
+                font-size: 8px;
             }
 
             .table-card {
@@ -1291,19 +1489,30 @@
 
 <div class="container">
 
-
-    <!-- JOIN -->
+    <!-- =====================================================
+         CREATE / JOIN ROOM
+         ===================================================== -->
 
     <div id="joinScreen"
          class="panel join-box">
 
         <h1>
-            Join Backlog Refinement
+            Refinement Poker
         </h1>
 
         <p>
-            Enter your name to take a seat at the table.
+            Create a private refinement room or join an existing
+            room using the code shared by your host.
         </p>
+
+
+        <label
+                class="field-label"
+                for="nameInput">
+
+            Your Name
+
+        </label>
 
         <input
                 id="nameInput"
@@ -1311,24 +1520,81 @@
                 placeholder="Your name"
                 maxlength="40"
                 autocomplete="off"
+                spellcheck="false"
         >
 
+
+        <div class="join-actions">
+
+            <button
+                    id="createRoomButton"
+                    class="create-button"
+                    type="button"
+                    disabled
+                    onclick="createRoom()">
+
+                Create New Room
+
+            </button>
+
+        </div>
+
+
+        <div class="join-divider">
+            OR
+        </div>
+
+
+        <label
+                class="field-label"
+                for="roomCodeInput">
+
+            Room Code
+
+        </label>
+
+        <input
+                id="roomCodeInput"
+                class="room-code-input"
+                type="text"
+                placeholder="ABCD-EFGH-JKLM-NPQR"
+                maxlength="19"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+        >
+
+
         <button
-                class="primary-button"
+                id="joinRoomButton"
+                class="join-button"
+                type="button"
+                disabled
                 onclick="joinRoom()">
 
-            Join Table
+            Join Existing Room
 
         </button>
+
 
         <div id="joinError"
              class="message">
         </div>
 
+
+        <div id="connectionMessage"
+             class="connection-message">
+
+            Connecting securely...
+
+        </div>
+
     </div>
 
 
-    <!-- ROOM -->
+    <!-- =====================================================
+         ROOM
+         ===================================================== -->
 
     <div id="roomScreen"
          class="panel">
@@ -1341,9 +1607,34 @@
                     Backlog Refinement
                 </h1>
 
+
                 <p id="hostMessage"
                    class="room-subtitle">
                 </p>
+
+
+                <div class="room-code-panel">
+
+                    <span class="room-code-label">
+                        Room:
+                    </span>
+
+                    <span
+                            id="activeRoomCode"
+                            class="room-code-value">
+                    </span>
+
+                    <button
+                            id="copyRoomCodeButton"
+                            class="copy-room-button"
+                            type="button"
+                            onclick="copyRoomCode()">
+
+                        Copy Code
+
+                    </button>
+
+                </div>
 
             </div>
 
@@ -1360,7 +1651,6 @@
 
 
         <div class="planning-layout">
-
 
             <!-- LEFT -->
 
@@ -1404,8 +1694,7 @@
 
             <div class="side-panel">
 
-
-                <!-- TABS -->
+                <!-- ACTIVITY TABS -->
 
                 <div class="activity-tabs">
 
@@ -1609,12 +1898,31 @@
 
 <script>
 
+    /* =====================================================
+       CLIENT STATE
+       ===================================================== */
+
     let socket;
+
+    let socketReady =
+        false;
+
+    let roomRequestPending =
+        false;
 
     let joined =
         false;
 
+    let removedFromRoom =
+        false;
+
     let joinedName =
+        "";
+
+    let pendingName =
+        "";
+
+    let currentRoomCode =
         "";
 
     let revealed =
@@ -1645,34 +1953,44 @@
         null;
 
 
+    /* =====================================================
+       AVAILABLE OPTIONS
+       ===================================================== */
+
     const MODE_OPTIONS = {
 
         ESTIMATE: [
+
             {
                 value: "1",
                 label: "1",
                 visual: "1"
             },
+
             {
                 value: "2",
                 label: "2",
                 visual: "2"
             },
+
             {
                 value: "3",
                 label: "3",
                 visual: "3"
             },
+
             {
                 value: "5",
                 label: "5",
                 visual: "5"
             },
+
             {
                 value: "13",
                 label: "13",
                 visual: "13"
             },
+
             {
                 value: "?",
                 label: "?",
@@ -1680,62 +1998,75 @@
             }
         ],
 
+
         GAME: [
+
             {
                 value: "PING_PONG",
                 label: "Ping Pong",
                 visual: "🏓"
             },
+
             {
                 value: "BASKETBALL",
                 label: "Basketball",
                 visual: "🏀"
             },
+
             {
                 value: "PICKLEBALL",
                 label: "Pickleball",
                 visual: "🏓"
             },
+
             {
                 value: "CRICKET",
                 label: "Cricket",
                 visual: "🏏"
             },
+
             {
                 value: "BADMINTON",
                 label: "Badminton",
                 visual: "🏸"
             },
+
             {
                 value: "GOLF",
                 label: "Golf",
                 visual: "⛳"
             },
+
             {
                 value: "CHESS",
                 label: "Chess",
                 visual: "♟️"
             },
+
             {
                 value: "BILLIARDS",
                 label: "Billiards",
                 visual: "🎱"
             },
+
             {
                 value: "VIDEO_GAMES",
                 label: "Video Games",
                 visual: "🎮"
             },
+
             {
                 value: "SKATING",
                 label: "Skating",
                 visual: "🛼"
             },
+
             {
                 value: "ICE_SKATING",
                 label: "Ice Skating",
                 visual: "⛸️"
             },
+
             {
                 value: "SWIMMING",
                 label: "Swimming",
@@ -1743,27 +2074,33 @@
             }
         ],
 
+
         FOOD: [
+
             {
                 value: "COFFEE",
                 label: "Coffee",
                 visual: "☕"
             },
+
             {
                 value: "LUNCH",
                 label: "Lunch",
                 visual: "🥪"
             },
+
             {
                 value: "SNACKS",
                 label: "Snacks",
                 visual: "🍪"
             },
+
             {
                 value: "RESTAURANT",
                 label: "Restaurant",
                 visual: "🍽️"
             },
+
             {
                 value: "PUB_AFTER_WORK",
                 label: "Pub / After Work",
@@ -1796,7 +2133,10 @@
                     day: "numeric",
                     year: "numeric"
                 }
-            ).format(now);
+            )
+                .format(
+                    now
+                );
 
 
         document
@@ -1812,7 +2152,10 @@
                     second: "2-digit",
                     hour12: true
                 }
-            ).format(now);
+            )
+                .format(
+                    now
+                );
 
 
         const timezonePart =
@@ -1822,12 +2165,14 @@
                     timeZoneName: "short"
                 }
             )
-            .formatToParts(now)
-            .find(
-                part =>
-                    part.type ===
-                    "timeZoneName"
-            );
+                .formatToParts(
+                    now
+                )
+                .find(
+                    part =>
+                        part.type ===
+                        "timeZoneName"
+                );
 
 
         document
@@ -1842,6 +2187,7 @@
 
 
     updateDateTime();
+
 
     setInterval(
         updateDateTime,
@@ -1877,10 +2223,9 @@
 
         } catch (error) {
 
-            console.log(
-                "Audio unavailable",
-                error
-            );
+            /*
+             * Audio is optional.
+             */
         }
     }
 
@@ -1913,10 +2258,9 @@
 
         } catch (error) {
 
-            console.log(
-                "Unable to play timer chime",
-                error
-            );
+            /*
+             * Timer sound failure must not affect room operation.
+             */
         }
     }
 
@@ -1928,11 +2272,13 @@
     ) {
 
         const oscillator =
-            audioContext.createOscillator();
+            audioContext
+                .createOscillator();
 
 
         const gain =
-            audioContext.createGain();
+            audioContext
+                .createGain();
 
 
         oscillator.type =
@@ -1990,6 +2336,21 @@
 
     function connect() {
 
+        if (
+            socket &&
+            (
+                socket.readyState ===
+                WebSocket.OPEN
+                ||
+                socket.readyState ===
+                WebSocket.CONNECTING
+            )
+        ) {
+
+            return;
+        }
+
+
         const protocol =
             window.location.protocol ===
             "https:"
@@ -2009,37 +2370,76 @@
         socket.onopen =
             function () {
 
-                console.log(
-                    "Refinement room WebSocket connected"
-                );
-            };
+                socketReady =
+                    true;
 
 
-        socket.onerror =
-            function (error) {
+                roomRequestPending =
+                    false;
 
-                console.error(
-                    "WebSocket error:",
-                    error
-                );
+
+                updateEntryButtons();
 
 
                 document
                     .getElementById(
-                        "joinError"
+                        "connectionMessage"
                     )
                     .innerText =
-                    "Unable to connect to the refinement room.";
+                    "Connected securely.";
+            };
+
+
+        socket.onerror =
+            function () {
+
+                socketReady =
+                    false;
+
+
+                roomRequestPending =
+                    false;
+
+
+                updateEntryButtons();
+
+
+                if (!joined) {
+
+                    showJoinError(
+                        "Unable to connect to the refinement room."
+                    );
+                }
             };
 
 
         socket.onmessage =
             function (event) {
 
-                const data =
-                    JSON.parse(
-                        event.data
-                    );
+                let data;
+
+
+                try {
+
+                    data =
+                        JSON.parse(
+                            event.data
+                        );
+
+                } catch (error) {
+
+                    return;
+                }
+
+
+                if (
+                    !data ||
+                    typeof data !==
+                    "object"
+                ) {
+
+                    return;
+                }
 
 
                 if (
@@ -2047,12 +2447,100 @@
                     "ERROR"
                 ) {
 
-                    document
-                        .getElementById(
-                            "joinError"
-                        )
-                        .innerText =
-                        data.message;
+                    roomRequestPending =
+                        false;
+
+
+                    updateEntryButtons();
+
+
+                    if (!joined) {
+
+                        showJoinError(
+                            typeof data.message ===
+                            "string"
+                                ? data.message
+                                : "Request failed."
+                        );
+                    }
+
+
+                    return;
+                }
+
+
+                if (
+                    data.type ===
+                    "ROOM_CREATED"
+                ) {
+
+                    if (
+                        typeof data.roomCode ===
+                        "string"
+                    ) {
+
+                        currentRoomCode =
+                            data.roomCode;
+                    }
+
+
+                    return;
+                }
+
+
+                if (
+                    data.type ===
+                    "ROOM_JOINED"
+                ) {
+
+                    if (
+                        typeof data.roomCode ===
+                        "string"
+                    ) {
+
+                        currentRoomCode =
+                            data.roomCode;
+                    }
+
+
+                    return;
+                }
+
+
+                if (
+                    data.type ===
+                    "REMOVED_FROM_ROOM"
+                ) {
+
+                    removedFromRoom =
+                        true;
+
+
+                    returnToEntryScreen(
+                        typeof data.message ===
+                        "string"
+                            ? data.message
+                            : "You were removed from this room by the host.",
+                        false
+                    );
+
+
+                    return;
+                }
+
+
+                if (
+                    data.type ===
+                    "ROOM_CLOSED"
+                ) {
+
+                    handleRoomClosed(
+                        typeof data.message ===
+                        "string"
+                            ? data.message
+                            : "The room has been closed."
+                    );
+
 
                     return;
                 }
@@ -2063,10 +2551,28 @@
                     "STATE"
                 ) {
 
+                    if (
+                        typeof data.roomCode ===
+                        "string"
+                    ) {
+
+                        currentRoomCode =
+                            data.roomCode;
+                    }
+
+
                     if (!joined) {
 
                         joined =
                             true;
+
+
+                        joinedName =
+                            pendingName;
+
+
+                        roomRequestPending =
+                            false;
 
 
                         document
@@ -2086,6 +2592,14 @@
                     }
 
 
+                    document
+                        .getElementById(
+                            "activeRoomCode"
+                        )
+                        .innerText =
+                        currentRoomCode;
+
+
                     renderState(
                         data
                     );
@@ -2096,21 +2610,68 @@
         socket.onclose =
             function () {
 
-                console.log(
-                    "Refinement room WebSocket disconnected"
+                socketReady =
+                    false;
+
+
+                roomRequestPending =
+                    false;
+
+
+                updateEntryButtons();
+
+
+                /*
+                 * If this connection was intentionally removed
+                 * by the host, preserve the removal message.
+                 */
+                if (removedFromRoom) {
+
+                    removedFromRoom =
+                        false;
+
+
+                    setTimeout(
+                        reconnectIfNeeded,
+                        1000
+                    );
+
+
+                    return;
+                }
+
+
+                if (joined) {
+
+                    returnToEntryScreen(
+                        "Connection was lost. Reconnect and join the room again.",
+                        true
+                    );
+
+                } else {
+
+                    document
+                        .getElementById(
+                            "connectionMessage"
+                        )
+                        .innerText =
+                        "Connection closed. Reconnecting...";
+                }
+
+
+                setTimeout(
+                    reconnectIfNeeded,
+                    1500
                 );
             };
     }
 
 
     /* =====================================================
-       JOIN
+       CREATE / JOIN ROOM
        ===================================================== */
 
-    function joinRoom() {
-
-        unlockAudio();
-
+    function getValidatedName() {
 
         const name =
             document
@@ -2118,49 +2679,296 @@
                     "nameInput"
                 )
                 .value
-                .trim();
+                .trim()
+                .replace(
+                    /\s+/g,
+                    " "
+                );
 
 
         if (!name) {
 
-            document
-                .getElementById(
-                    "joinError"
-                )
-                .innerText =
-                "Please enter your name.";
+            showJoinError(
+                "Please enter your name."
+            );
 
-            return;
+
+            return null;
         }
 
 
         if (
-            !socket ||
-            socket.readyState !==
-            WebSocket.OPEN
+            name.length > 40
         ) {
 
-            document
-                .getElementById(
-                    "joinError"
-                )
-                .innerText =
-                "Connecting to server. Please try again.";
+            showJoinError(
+                "Name must be 40 characters or fewer."
+            );
+
+
+            return null;
+        }
+
+
+        return name;
+    }
+
+
+    function createRoom() {
+
+        unlockAudio();
+
+
+        clearJoinError();
+
+
+        const name =
+            getValidatedName();
+
+
+        if (!name) {
+            return;
+        }
+
+
+        if (!canSendRoomRequest()) {
+            return;
+        }
+
+
+        pendingName =
+            name;
+
+
+        roomRequestPending =
+            true;
+
+
+        updateEntryButtons();
+
+
+        socket.send(
+            JSON.stringify({
+                action: "CREATE_ROOM",
+                name: name
+            })
+        );
+    }
+
+
+    function joinRoom() {
+
+        unlockAudio();
+
+
+        clearJoinError();
+
+
+        const name =
+            getValidatedName();
+
+
+        if (!name) {
+            return;
+        }
+
+
+        const roomCode =
+            normalizeRoomCodeInput(
+                document
+                    .getElementById(
+                        "roomCodeInput"
+                    )
+                    .value
+            );
+
+
+        if (!roomCode) {
+
+            showJoinError(
+                "Please enter the room code."
+            );
+
 
             return;
         }
 
 
-        joinedName =
+        if (!canSendRoomRequest()) {
+            return;
+        }
+
+
+        pendingName =
             name;
+
+
+        roomRequestPending =
+            true;
+
+
+        updateEntryButtons();
 
 
         socket.send(
             JSON.stringify({
-                action: "JOIN",
-                name: name
+                action: "JOIN_ROOM",
+                name: name,
+                roomCode: roomCode
             })
         );
+    }
+
+
+    function canSendRoomRequest() {
+
+        if (
+            !socket ||
+            !socketReady ||
+            socket.readyState !==
+            WebSocket.OPEN
+        ) {
+
+            showJoinError(
+                "Connecting to server. Please try again."
+            );
+
+
+            return false;
+        }
+
+
+        if (roomRequestPending) {
+
+            return false;
+        }
+
+
+        return true;
+    }
+
+
+    function normalizeRoomCodeInput(
+        value
+    ) {
+
+        if (
+            typeof value !==
+            "string"
+        ) {
+
+            return "";
+        }
+
+
+        return value
+            .trim()
+            .toUpperCase()
+            .replace(
+                /\s+/g,
+                ""
+            );
+    }
+
+
+    function updateEntryButtons() {
+
+        const disabled =
+            !socketReady ||
+            roomRequestPending;
+
+
+        document
+            .getElementById(
+                "createRoomButton"
+            )
+            .disabled =
+            disabled;
+
+
+        document
+            .getElementById(
+                "joinRoomButton"
+            )
+            .disabled =
+            disabled;
+    }
+
+
+    function showJoinError(
+        message
+    ) {
+
+        document
+            .getElementById(
+                "joinError"
+            )
+            .innerText =
+            message;
+    }
+
+
+    function clearJoinError() {
+
+        document
+            .getElementById(
+                "joinError"
+            )
+            .innerText =
+            "";
+    }
+
+
+    /* =====================================================
+       ROOM CODE
+       ===================================================== */
+
+    async function copyRoomCode() {
+
+        if (!currentRoomCode) {
+            return;
+        }
+
+
+        try {
+
+            await navigator
+                .clipboard
+                .writeText(
+                    currentRoomCode
+                );
+
+
+            const button =
+                document
+                    .getElementById(
+                        "copyRoomCodeButton"
+                    );
+
+
+            const originalText =
+                button.innerText;
+
+
+            button.innerText =
+                "Copied";
+
+
+            setTimeout(
+                function () {
+
+                    button.innerText =
+                        originalText;
+                },
+                1500
+            );
+
+        } catch (error) {
+
+            /*
+             * Clipboard availability depends on the browser.
+             */
+        }
     }
 
 
@@ -2173,6 +2981,11 @@
     ) {
 
         unlockAudio();
+
+
+        if (!canSendRoomAction()) {
+            return;
+        }
 
 
         socket.send(
@@ -2196,7 +3009,11 @@
         unlockAudio();
 
 
-        if (revealed) {
+        if (
+            revealed ||
+            !canSendRoomAction()
+        ) {
+
             return;
         }
 
@@ -2244,6 +3061,11 @@
         unlockAudio();
 
 
+        if (!canSendRoomAction()) {
+            return;
+        }
+
+
         socket.send(
             JSON.stringify({
                 action: "START_TIMER"
@@ -2257,15 +3079,17 @@
     ) {
 
         const timerSection =
-            document.getElementById(
-                "timerSection"
-            );
+            document
+                .getElementById(
+                    "timerSection"
+                );
 
 
         const startButton =
-            document.getElementById(
-                "startTimerButton"
-            );
+            document
+                .getElementById(
+                    "startTimerButton"
+                );
 
 
         timerSection.style.display =
@@ -2305,6 +3129,7 @@
                     timerInterval
                 );
 
+
                 timerInterval =
                     null;
             }
@@ -2334,15 +3159,17 @@
     function updateTimerDisplay() {
 
         const display =
-            document.getElementById(
-                "timerDisplay"
-            );
+            document
+                .getElementById(
+                    "timerDisplay"
+                );
 
 
         const badge =
-            document.getElementById(
-                "timerBadge"
-            );
+            document
+                .getElementById(
+                    "timerBadge"
+                );
 
 
         const remaining =
@@ -2380,6 +3207,7 @@
                     timerInterval
                 );
 
+
                 timerInterval =
                     null;
             }
@@ -2412,7 +3240,9 @@
 
         display.innerText =
             "00:" +
-            String(seconds)
+            String(
+                seconds
+            )
                 .padStart(
                     2,
                     "0"
@@ -2488,6 +3318,11 @@
 
     function revealVotes() {
 
+        if (!canSendRoomAction()) {
+            return;
+        }
+
+
         socket.send(
             JSON.stringify({
                 action: "REVEAL"
@@ -2498,6 +3333,11 @@
 
     function resetVotes() {
 
+        if (!canSendRoomAction()) {
+            return;
+        }
+
+
         localSelection =
             null;
 
@@ -2507,6 +3347,63 @@
                 action: "RESET"
             })
         );
+    }
+
+
+    function removeParticipant(
+        participantId,
+        participantName
+    ) {
+
+        if (!canSendRoomAction()) {
+            return;
+        }
+
+
+        if (
+            typeof participantId !==
+            "string"
+            ||
+            !participantId
+        ) {
+
+            return;
+        }
+
+
+        const confirmed =
+            window.confirm(
+                "Remove " +
+                participantName +
+                " from this room?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        socket.send(
+            JSON.stringify({
+                action:
+                    "REMOVE_PARTICIPANT",
+
+                participantId:
+                    participantId
+            })
+        );
+    }
+
+
+    function canSendRoomAction() {
+
+        return joined
+            &&
+            socket
+            &&
+            socket.readyState ===
+            WebSocket.OPEN;
     }
 
 
@@ -2527,12 +3424,16 @@
 
 
         revealed =
-            data.revealed;
+            Boolean(
+                data.revealed
+            );
 
 
         currentMode =
-            data.mode ||
-            "ESTIMATE";
+            typeof data.mode ===
+            "string"
+                ? data.mode
+                : "ESTIMATE";
 
 
         if (
@@ -2555,6 +3456,14 @@
         }
 
 
+        const participants =
+            Array.isArray(
+                data.participants
+            )
+                ? data.participants
+                : [];
+
+
         renderTabs(
             data
         );
@@ -2566,13 +3475,19 @@
 
 
         renderParticipants(
-            data.participants,
-            data.revealed
+            participants,
+            revealed,
+            Boolean(
+                data.youAreHost
+            )
         );
 
 
         renderTableStatus(
-            data
+            {
+                ...data,
+                participants: participants
+            }
         );
 
 
@@ -2582,14 +3497,18 @@
 
 
         renderResults(
-            data
+            {
+                ...data,
+                participants: participants
+            }
         );
 
 
         const hostControls =
-            document.getElementById(
-                "hostControls"
-            );
+            document
+                .getElementById(
+                    "hostControls"
+                );
 
 
         hostControls.style.display =
@@ -2642,7 +3561,7 @@
             .innerHTML =
             data.youAreHost
 
-                ? "<strong>You are the host.</strong> Choose the activity, then reveal when everyone has voted."
+                ? "<strong>You are the host.</strong> Share the room code with your team, choose the activity, and reveal when everyone has voted."
 
                 : "Choose your option. Your selection stays hidden until the host reveals it.";
     }
@@ -2661,28 +3580,28 @@
             "GAME",
             "FOOD"
         ]
-        .forEach(
-            mode => {
+            .forEach(
+                mode => {
 
-                const tab =
-                    document
-                        .getElementById(
-                            "tab" +
-                            mode
-                        );
-
-
-                tab.classList.toggle(
-                    "active",
-                    mode ===
-                    currentMode
-                );
+                    const tab =
+                        document
+                            .getElementById(
+                                "tab" +
+                                mode
+                            );
 
 
-                tab.disabled =
-                    !data.youAreHost;
-            }
-        );
+                    tab.classList.toggle(
+                        "active",
+                        mode ===
+                        currentMode
+                    );
+
+
+                    tab.disabled =
+                        !data.youAreHost;
+                }
+            );
 
 
         document
@@ -2691,8 +3610,8 @@
             )
             .innerText =
             data.youAreHost
-                ? "You control the activity for the room."
-                : "The host controls the activity for the room.";
+                ? "You control the activity for this room."
+                : "The host controls the activity for this room.";
     }
 
 
@@ -2707,25 +3626,29 @@
         const options =
             MODE_OPTIONS[
                 currentMode
-            ];
+            ] ||
+            MODE_OPTIONS.ESTIMATE;
 
 
         const title =
-            document.getElementById(
-                "optionsTitle"
-            );
+            document
+                .getElementById(
+                    "optionsTitle"
+                );
 
 
         const helper =
-            document.getElementById(
-                "optionsHelper"
-            );
+            document
+                .getElementById(
+                    "optionsHelper"
+                );
 
 
         const grid =
-            document.getElementById(
-                "optionsGrid"
-            );
+            document
+                .getElementById(
+                    "optionsGrid"
+                );
 
 
         if (
@@ -2783,9 +3706,10 @@
             option => {
 
                 const button =
-                    document.createElement(
-                        "button"
-                    );
+                    document
+                        .createElement(
+                            "button"
+                        );
 
 
                 button.className =
@@ -2797,9 +3721,10 @@
                     option.value
                 ) {
 
-                    button.classList.add(
-                        "selected"
-                    );
+                    button.classList
+                        .add(
+                            "selected"
+                        );
                 }
 
 
@@ -2859,13 +3784,15 @@
 
     function renderParticipants(
         participants,
-        isRevealed
+        isRevealed,
+        youAreHost
     ) {
 
         const container =
-            document.getElementById(
-                "participants"
-            );
+            document
+                .getElementById(
+                    "participants"
+                );
 
 
         container.innerHTML =
@@ -2884,6 +3811,16 @@
 
                 const person =
                     layout.person;
+
+
+                if (
+                    !person ||
+                    typeof person.name !==
+                    "string"
+                ) {
+
+                    return;
+                }
 
 
                 const radians =
@@ -2909,13 +3846,15 @@
 
 
                 const seat =
-                    document.createElement(
-                        "div"
-                    );
+                    document
+                        .createElement(
+                            "div"
+                        );
 
 
                 const isCurrentUser =
-                    joinedName &&
+                    joinedName
+                    &&
                     person.name
                         .toLowerCase() ===
                     joinedName
@@ -2948,7 +3887,9 @@
 
                 const statusHtml =
                     isRevealed
+
                         ? ""
+
                         : `
 
                             <div class="
@@ -2971,6 +3912,17 @@
                             </div>
 
                           `;
+
+
+                const canRemove =
+                    youAreHost
+                    &&
+                    !person.host
+                    &&
+                    typeof person.participantId ===
+                    "string"
+                    &&
+                    person.participantId.length > 0;
 
 
                 seat.innerHTML = `
@@ -3014,6 +3966,53 @@
                 `;
 
 
+                /*
+                 * The public participantId is provided by the
+                 * backend only to the legitimate host.
+                 */
+                if (canRemove) {
+
+                    const removeButton =
+                        document
+                            .createElement(
+                                "button"
+                            );
+
+
+                    removeButton.type =
+                        "button";
+
+
+                    removeButton.className =
+                        "remove-participant-button";
+
+
+                    removeButton.innerText =
+                        "Remove";
+
+
+                    removeButton.title =
+                        "Remove " +
+                        person.name +
+                        " from this room";
+
+
+                    removeButton.onclick =
+                        function () {
+
+                            removeParticipant(
+                                person.participantId,
+                                person.name
+                            );
+                        };
+
+
+                    seat.appendChild(
+                        removeButton
+                    );
+                }
+
+
                 container.appendChild(
                     seat
                 );
@@ -3025,9 +4024,10 @@
                 ) {
 
                     const card =
-                        document.createElement(
-                            "div"
-                        );
+                        document
+                            .createElement(
+                                "div"
+                            );
 
 
                     const cardLeft =
@@ -3069,9 +4069,10 @@
                             "ESTIMATE"
                         ) {
 
-                            card.classList.add(
-                                "choice-card"
-                            );
+                            card.classList
+                                .add(
+                                    "choice-card"
+                                );
                         }
 
 
@@ -3079,6 +4080,7 @@
                             getSelectionVisual(
                                 person.selection
                             );
+
 
                         card.title =
                             getSelectionLabel(
@@ -3119,7 +4121,9 @@
                 ) => {
 
                     return {
-                        person,
+
+                        person: person,
+
                         angle:
                             count === 1
                                 ? 90
@@ -3144,7 +4148,8 @@
                     ) =>
                         getSelectionIndex(
                             first.selection
-                        ) -
+                        )
+                        -
                         getSelectionIndex(
                             second.selection
                         )
@@ -3174,6 +4179,7 @@
                     groups.push({
                         selection:
                             person.selection,
+
                         people:
                             [person]
                     });
@@ -3215,7 +4221,10 @@
                         person => {
 
                             layouts.push({
-                                person,
+
+                                person:
+                                    person,
+
                                 angle:
                                     90 +
                                     360 *
@@ -3262,15 +4271,17 @@
 
 
         const title =
-            document.getElementById(
-                "tableTitle"
-            );
+            document
+                .getElementById(
+                    "tableTitle"
+                );
 
 
         const status =
-            document.getElementById(
-                "tableStatus"
-            );
+            document
+                .getElementById(
+                    "tableStatus"
+                );
 
 
         if (
@@ -3283,6 +4294,7 @@
 
             status.innerText =
                 "Same choices are grouped around the table.";
+
 
             return;
         }
@@ -3319,7 +4331,9 @@
             status.innerText =
                 currentMode ===
                 "ESTIMATE"
+
                     ? "All participants have played a card ✓"
+
                     : "Everyone has voted ✓";
 
         } else {
@@ -3331,7 +4345,9 @@
                 (
                     currentMode ===
                     "ESTIMATE"
+
                         ? " cards played"
+
                         : " votes submitted"
                 );
         }
@@ -3347,15 +4363,17 @@
     ) {
 
         const panel =
-            document.getElementById(
-                "resultsPanel"
-            );
+            document
+                .getElementById(
+                    "resultsPanel"
+                );
 
 
         const distribution =
-            document.getElementById(
-                "voteDistribution"
-            );
+            document
+                .getElementById(
+                    "voteDistribution"
+                );
 
 
         distribution.innerHTML =
@@ -3368,6 +4386,7 @@
 
             panel.style.display =
                 "none";
+
 
             return;
         }
@@ -3385,13 +4404,16 @@
                 )
                 .filter(
                     selection =>
-                        selection !== null &&
+                        selection !== null
+                        &&
                         selection !== undefined
                 );
 
 
         const counts =
-            {};
+            Object.create(
+                null
+            );
 
 
         selections.forEach(
@@ -3401,7 +4423,8 @@
                     (
                         counts[selection] ||
                         0
-                    ) +
+                    )
+                    +
                     1;
             }
         );
@@ -3423,7 +4446,8 @@
                         counts[
                             option.value
                         ] ===
-                        highestCount &&
+                        highestCount
+                        &&
                         highestCount > 0
                 );
 
@@ -3451,6 +4475,7 @@
 
             const average =
                 numeric.length
+
                     ? numeric.reduce(
                         (
                             sum,
@@ -3459,24 +4484,35 @@
                             sum +
                             value,
                         0
-                      ) /
+                      )
+                      /
                       numeric.length
+
                     : null;
 
 
             setSummary(
+
                 "Average",
+
                 average === null
+
                     ? "-"
+
                     : Number.isInteger(
                         average
                       )
+
                         ? average
+
                         : average.toFixed(
                             1
                           ),
+
                 "Most Voted",
+
                 winners.length
+
                     ? winners
                         .map(
                             option =>
@@ -3485,16 +4521,22 @@
                         .join(
                             " / "
                         )
+
                     : "-",
+
                 "Total Votes",
+
                 selections.length
             );
 
         } else {
 
             setSummary(
+
                 "Team Choice",
+
                 winners.length
+
                     ? winners
                         .map(
                             option =>
@@ -3503,11 +4545,16 @@
                         .join(
                             " / "
                         )
+
                     : "-",
+
                 "Top Votes",
+
                 highestCount ||
                 "-",
+
                 "Total Votes",
+
                 selections.length
             );
         }
@@ -3527,22 +4574,26 @@
                     if (
                         count === 0
                     ) {
+
                         return;
                     }
 
 
                     const percentage =
                         selections.length
+
                             ? count /
                               selections.length *
                               100
+
                             : 0;
 
 
                     const row =
-                        document.createElement(
-                            "div"
-                        );
+                        document
+                            .createElement(
+                                "div"
+                            );
 
 
                     row.className =
@@ -3557,7 +4608,11 @@
 
                             ${
                                 currentMode === "ESTIMATE"
-                                    ? escapeHtml(option.label)
+
+                                    ? escapeHtml(
+                                        option.label
+                                      )
+
                                     : escapeHtml(
                                         option.visual +
                                         " " +
@@ -3762,13 +4817,14 @@
 
 
         return (
-            parts[0][0] +
+            parts[0][0]
+            +
             parts[
                 parts.length -
                 1
             ][0]
         )
-        .toUpperCase();
+            .toUpperCase();
     }
 
 
@@ -3777,9 +4833,10 @@
     ) {
 
         const div =
-            document.createElement(
-                "div"
-            );
+            document
+                .createElement(
+                    "div"
+                );
 
 
         div.innerText =
@@ -3792,9 +4849,238 @@
     }
 
 
+    /* =====================================================
+       ROOM CLOSED / REMOVED / CONNECTION RESET
+       ===================================================== */
+
+    function handleRoomClosed(
+        message
+    ) {
+
+        returnToEntryScreen(
+            message,
+            false
+        );
+
+
+        setTimeout(
+            reconnectIfNeeded,
+            1000
+        );
+    }
+
+
+    function returnToEntryScreen(
+        message,
+        preserveRoomCode
+    ) {
+
+        const previousRoomCode =
+            currentRoomCode;
+
+
+        joined =
+            false;
+
+
+        joinedName =
+            "";
+
+
+        pendingName =
+            "";
+
+
+        currentRoomCode =
+            "";
+
+
+        localSelection =
+            null;
+
+
+        revealed =
+            false;
+
+
+        previousRevealed =
+            false;
+
+
+        currentMode =
+            "ESTIMATE";
+
+
+        previousMode =
+            "ESTIMATE";
+
+
+        timerEndEpochMs =
+            0;
+
+
+        if (timerInterval) {
+
+            clearInterval(
+                timerInterval
+            );
+
+
+            timerInterval =
+                null;
+        }
+
+
+        resetTimerDisplay();
+
+
+        document
+            .getElementById(
+                "roomScreen"
+            )
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById(
+                "joinScreen"
+            )
+            .style.display =
+            "block";
+
+
+        if (
+            preserveRoomCode &&
+            previousRoomCode
+        ) {
+
+            document
+                .getElementById(
+                    "roomCodeInput"
+                )
+                .value =
+                previousRoomCode;
+
+        } else {
+
+            document
+                .getElementById(
+                    "roomCodeInput"
+                )
+                .value =
+                "";
+        }
+
+
+        showJoinError(
+            message
+        );
+    }
+
+
+    function reconnectIfNeeded() {
+
+        if (
+            socket &&
+            (
+                socket.readyState ===
+                WebSocket.OPEN
+                ||
+                socket.readyState ===
+                WebSocket.CONNECTING
+            )
+        ) {
+
+            return;
+        }
+
+
+        connect();
+    }
+
+
+    /* =====================================================
+       ROOM CODE INPUT FORMATTING
+       ===================================================== */
+
+    document
+        .getElementById(
+            "roomCodeInput"
+        )
+        .addEventListener(
+            "input",
+            function () {
+
+                let value =
+                    this.value
+                        .toUpperCase()
+                        .replace(
+                            /[^A-Z0-9]/g,
+                            ""
+                        )
+                        .substring(
+                            0,
+                            16
+                        );
+
+
+                const groups =
+                    value.match(
+                        /.{1,4}/g
+                    );
+
+
+                this.value =
+                    groups
+                        ? groups.join("-")
+                        : "";
+            }
+        );
+
+
+    /* =====================================================
+       ENTER KEY SUPPORT
+       ===================================================== */
+
     document
         .getElementById(
             "nameInput"
+        )
+        .addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    const roomCode =
+                        document
+                            .getElementById(
+                                "roomCodeInput"
+                            )
+                            .value
+                            .trim();
+
+
+                    if (roomCode) {
+
+                        joinRoom();
+
+                    } else {
+
+                        createRoom();
+                    }
+                }
+            }
+        );
+
+
+    document
+        .getElementById(
+            "roomCodeInput"
         )
         .addEventListener(
             "keydown",
@@ -3810,6 +5096,12 @@
             }
         );
 
+
+    /* =====================================================
+       START
+       ===================================================== */
+
+    updateEntryButtons();
 
     connect();
 

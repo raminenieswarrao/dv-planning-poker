@@ -19,6 +19,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(pokerWebSocketHandler, "/ws")
-                .setAllowedOrigins("*");
+                .setAllowedOrigins(
+                        "https://dv-planning-poker.onrender.com",
+                        "http://localhost:8080",
+                        "http://127.0.0.1:8080"
+                );
     }
 }
