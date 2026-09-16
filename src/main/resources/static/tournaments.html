@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tournaments | Refinement Poker</title>
+
+    <link rel="stylesheet"
+          href="/css/auth-nav.css">
+
+    <link rel="stylesheet"
+          href="/css/tournaments.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <a href="/dashboard.html"
+       class="header-left tournament-brand">
+
+        <div class="dv-logo-card">
+            DV
+        </div>
+
+        <span>
+            Refinement Poker
+        </span>
+
+    </a>
+
+
+    <div class="header-clock">
+
+        <div id="currentDate"
+             class="header-date">
+        </div>
+
+        <div class="header-time-row">
+
+            <span id="currentTime"
+                  class="header-live-time">
+            </span>
+
+            <span id="currentTimezone"
+                  class="header-timezone">
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main id="tournamentPage"
+      class="tournament-page page-hidden">
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <section class="page-heading">
+
+        <div>
+
+            <a href="/dashboard.html"
+               class="back-link">
+
+                ← Dashboard
+
+            </a>
+
+            <div class="eyebrow">
+                Tournaments
+            </div>
+
+            <h1>
+                Game Tournaments
+            </h1>
+
+            <p>
+                View ongoing tournaments or create a new one
+                for your team.
+            </p>
+
+        </div>
+
+
+        <button id="openCreateButton"
+                class="create-tournament-button"
+                type="button">
+
+            + Create Tournament
+
+        </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         MESSAGE
+         ===================================================== -->
+
+    <div id="pageMessage"
+         class="page-message"
+         role="alert"
+         aria-live="polite">
+    </div>
+
+
+    <!-- =====================================================
+         ONGOING TOURNAMENTS
+         ===================================================== -->
+
+    <section class="tournament-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <h2>
+                    Ongoing Tournaments
+                </h2>
+
+                <p>
+                    Everyone can view active tournaments.
+                    Tournament members can edit them.
+                </p>
+
+            </div>
+
+            <span id="tournamentCount"
+                  class="count-badge">
+
+                0
+
+            </span>
+
+        </div>
+
+
+        <div id="tournamentList"
+             class="tournament-grid">
+        </div>
+
+
+        <div id="emptyState"
+             class="empty-state">
+
+            <div class="empty-icon">
+                🏆
+            </div>
+
+            <h3>
+                No ongoing tournaments
+            </h3>
+
+            <p>
+                Create the first tournament for your team.
+            </p>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     CREATE TOURNAMENT MODAL
+     ===================================================== -->
+
+<div id="createModal"
+     class="modal-backdrop hidden">
+
+    <section class="modal-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="createTournamentTitle">
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    New Tournament
+                </div>
+
+                <h2 id="createTournamentTitle">
+                    Create Tournament
+                </h2>
+
+            </div>
+
+            <button id="closeCreateButton"
+                    class="close-button"
+                    type="button"
+                    aria-label="Close">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form id="createTournamentForm"
+              novalidate>
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="tournamentName">
+                        Tournament Name
+                    </label>
+
+                    <input
+                            id="tournamentName"
+                            type="text"
+                            maxlength="150"
+                            placeholder="Friday Pickleball"
+                            required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="gameType">
+                        Game
+                    </label>
+
+                    <select id="gameType"
+                            required>
+
+                        <option value="">
+                            Select game
+                        </option>
+
+                        <option value="PICKLEBALL">
+                            Pickleball
+                        </option>
+
+                        <option value="PING_PONG">
+                            Ping Pong
+                        </option>
+
+                        <option value="BADMINTON">
+                            Badminton
+                        </option>
+
+                        <option value="BASKETBALL">
+                            Basketball
+                        </option>
+
+                        <option value="CRICKET">
+                            Cricket
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="tournamentFormat">
+                        Format
+                    </label>
+
+                    <select id="tournamentFormat">
+
+                        <option value="">
+                            Select format
+                        </option>
+
+                        <option value="SINGLES">
+                            Singles
+                        </option>
+
+                        <option value="DOUBLES">
+                            Doubles
+                        </option>
+
+                        <option value="TEAM">
+                            Team
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="scheduledAt">
+                        Date & Time
+                    </label>
+
+                    <input
+                            id="scheduledAt"
+                            type="datetime-local"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="location">
+                    Location
+                </label>
+
+                <input
+                        id="location"
+                        type="text"
+                        maxlength="200"
+                        placeholder="Office gym, park, recreation center..."
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="description">
+                    Description
+                </label>
+
+                <textarea
+                        id="description"
+                        maxlength="2000"
+                        rows="4"
+                        placeholder="Optional tournament details...">
+                </textarea>
+
+            </div>
+
+
+            <div id="createMessage"
+                 class="form-message"
+                 role="alert"
+                 aria-live="polite">
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button id="cancelCreateButton"
+                        class="secondary-button"
+                        type="button">
+
+                    Cancel
+
+                </button>
+
+                <button id="submitCreateButton"
+                        class="primary-button"
+                        type="submit">
+
+                    Create Tournament
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<div id="loadingState"
+     class="page-loading">
+
+    <div class="loading-logo">
+        DV
+    </div>
+
+    <div>
+        Loading tournaments...
+    </div>
+
+</div>
+
+
+<footer class="footer-credit">
+    Designed and developed by Eswar Ramineni
+</footer>
+
+
+<script src="/js/auth-nav.js"
+        defer>
+</script>
+
+<script src="/js/tournaments.js"
+        defer>
+</script>
+
+</body>
+
+</html>

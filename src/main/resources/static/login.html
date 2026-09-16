@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Refinement Poker</title>
+
+    <link rel="stylesheet"
+          href="/css/auth.css">
+</head>
+
+<body>
+
+<header class="auth-header">
+
+    <a href="/"
+       class="brand"
+       aria-label="Refinement Poker home">
+
+        <div class="brand-logo">
+            DV
+        </div>
+
+        <span class="brand-name">
+            Refinement Poker
+        </span>
+
+    </a>
+
+
+    <div class="header-actions">
+
+        <a href="/"
+           class="header-link">
+
+            Home
+
+        </a>
+
+        <a href="/signup.html"
+           class="signup-header-button">
+
+            Sign Up
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="auth-page">
+
+    <section class="auth-card">
+
+        <div class="auth-card-header">
+
+            <div class="auth-icon">
+                DV
+            </div>
+
+            <h1>
+                Welcome back
+            </h1>
+
+            <p>
+                Sign in to manage your profile, tournaments,
+                scores and game history.
+            </p>
+
+        </div>
+
+
+        <form id="loginForm"
+              novalidate>
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        maxlength="254"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            maxlength="128"
+                            autocomplete="current-password"
+                            placeholder="Enter your password"
+                            required
+                    >
+
+                    <button
+                            id="togglePassword"
+                            class="password-toggle"
+                            type="button"
+                            aria-label="Show password">
+
+                        Show
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div id="loginMessage"
+                 class="form-message"
+                 role="alert"
+                 aria-live="polite">
+            </div>
+
+
+            <button
+                    id="loginButton"
+                    class="primary-button"
+                    type="submit">
+
+                Sign In
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-divider">
+
+            <span>
+                New here?
+            </span>
+
+        </div>
+
+
+        <a href="/signup.html"
+           class="secondary-button">
+
+            Create an Account
+
+        </a>
+
+
+        <a href="/"
+           class="continue-link">
+
+            Continue to Planning Poker without login
+
+        </a>
+
+    </section>
+
+</main>
+
+
+<footer class="auth-footer">
+
+    Designed and developed by Eswar Ramineni
+
+</footer>
+
+
+<script src="/js/login.js"
+        defer>
+</script>
+
+</body>
+
+</html>

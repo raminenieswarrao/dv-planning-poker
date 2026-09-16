@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up | Refinement Poker</title>
+
+    <link rel="stylesheet"
+          href="/css/auth.css">
+</head>
+
+<body>
+
+<header class="auth-header">
+
+    <a href="/"
+       class="brand"
+       aria-label="Refinement Poker home">
+
+        <div class="brand-logo">
+            DV
+        </div>
+
+        <span class="brand-name">
+            Refinement Poker
+        </span>
+
+    </a>
+
+
+    <div class="header-actions">
+
+        <a href="/"
+           class="header-link">
+
+            Home
+
+        </a>
+
+        <a href="/login.html"
+           class="signup-header-button">
+
+            Login
+
+        </a>
+
+    </div>
+
+</header>
+
+
+<main class="auth-page">
+
+    <section class="auth-card">
+
+        <div class="auth-card-header">
+
+            <div class="auth-icon">
+                DV
+            </div>
+
+            <h1>
+                Create your account
+            </h1>
+
+            <p>
+                Join Refinement Poker to manage your profile,
+                tournaments and game scores.
+            </p>
+
+        </div>
+
+
+        <!--
+            JavaScript normally intercepts this form and sends JSON
+            to /api/auth/register.
+
+            method="post" is intentionally present as a safety fallback.
+            If JavaScript ever fails, passwords will NOT be placed
+            into the browser URL.
+        -->
+        <form id="signupForm"
+              method="post"
+              action="/api/auth/register"
+              novalidate>
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+                <label for="name">
+                    Name
+                </label>
+
+                <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        minlength="3"
+                        maxlength="100"
+                        autocomplete="name"
+                        placeholder="Your name"
+                        required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        maxlength="254"
+                        autocomplete="email"
+                        placeholder="you@example.com"
+                        required
+                >
+
+            </div>
+
+
+            <!-- GENDER -->
+
+            <div class="form-group">
+
+                <label for="gender">
+                    Gender
+                </label>
+
+                <select
+                        id="gender"
+                        name="gender"
+                        required>
+
+                    <option value="">
+                        Select gender
+                    </option>
+
+                    <option value="MALE">
+                        Male
+                    </option>
+
+                    <option value="FEMALE">
+                        Female
+                    </option>
+
+                    <option value="OTHER">
+                        Other
+                    </option>
+
+                    <option value="PREFER_NOT_TO_SAY">
+                        Prefer not to say
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            minlength="8"
+                            maxlength="128"
+                            autocomplete="new-password"
+                            placeholder="Minimum 8 characters"
+                            required
+                    >
+
+                    <button
+                            id="togglePassword"
+                            class="password-toggle"
+                            type="button"
+                            aria-label="Show password">
+
+                        Show
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <div class="password-wrapper">
+
+                    <input
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            type="password"
+                            minlength="8"
+                            maxlength="128"
+                            autocomplete="new-password"
+                            placeholder="Enter password again"
+                            required
+                    >
+
+                    <button
+                            id="toggleConfirmPassword"
+                            class="password-toggle"
+                            type="button"
+                            aria-label="Show confirm password">
+
+                        Show
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div id="signupMessage"
+                 class="form-message"
+                 role="alert"
+                 aria-live="polite">
+            </div>
+
+
+            <!-- CREATE ACCOUNT -->
+
+            <button
+                    id="signupButton"
+                    class="primary-button"
+                    type="submit">
+
+                Create Account
+
+            </button>
+
+        </form>
+
+
+        <div class="auth-divider">
+
+            <span>
+                Already registered?
+            </span>
+
+        </div>
+
+
+        <a href="/login.html"
+           class="secondary-button">
+
+            Sign In
+
+        </a>
+
+
+        <a href="/"
+           class="continue-link">
+
+            Continue to Planning Poker without login
+
+        </a>
+
+    </section>
+
+</main>
+
+
+<footer class="auth-footer">
+
+    Designed and developed by Eswar Ramineni
+
+</footer>
+
+
+<script src="/js/signup.js"
+        defer>
+</script>
+
+</body>
+
+</html>

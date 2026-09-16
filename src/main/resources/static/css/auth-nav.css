@@ -1,0 +1,448 @@
+/* =====================================================
+   AUTH NAVIGATION
+   ===================================================== */
+
+.auth-nav {
+    margin-left: auto;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+
+/* =====================================================
+   LOGIN / SIGN UP
+   ===================================================== */
+
+.auth-nav-link {
+    min-height: 38px;
+
+    padding: 0 15px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+.auth-login-link {
+    border: 1px solid #1473e6;
+
+    background: #ffffff;
+    color: #1473e6;
+}
+
+
+.auth-login-link:hover {
+    background: #eef6ff;
+}
+
+
+.auth-signup-link {
+    border: 1px solid #1473e6;
+
+    background: #1473e6;
+    color: #ffffff;
+}
+
+
+.auth-signup-link:hover {
+    background: #0d67d1;
+}
+
+
+/* =====================================================
+   ACCOUNT
+   ===================================================== */
+
+.auth-account {
+    position: relative;
+}
+
+
+.auth-account-button {
+    min-height: 40px;
+
+    padding: 5px 11px 5px 6px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border: 1px solid #d8e0ea;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #172033;
+
+    cursor: pointer;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.auth-account-button:hover {
+    background: #f8fafc;
+}
+
+
+.auth-avatar {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #1473e6;
+    color: #ffffff;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+.auth-account-text {
+    max-width: 150px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.auth-chevron {
+    color: #667085;
+
+    font-size: 9px;
+}
+
+
+/* =====================================================
+   DROPDOWN
+   ===================================================== */
+
+.auth-menu {
+    position: absolute;
+
+    top: calc(100% + 8px);
+    right: 0;
+
+    z-index: 1000;
+
+    width: 210px;
+
+    padding: 7px;
+
+    border: 1px solid #e3e8ef;
+    border-radius: 11px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 10px 28px
+            rgba(16, 24, 40, 0.14);
+}
+
+
+.auth-menu.hidden {
+    display: none;
+}
+
+
+.auth-menu-user {
+    padding: 9px 10px 11px;
+
+    border-bottom: 1px solid #eef1f5;
+
+    margin-bottom: 5px;
+}
+
+
+.auth-menu-label {
+    display: block;
+
+    margin-bottom: 3px;
+
+    color: #98a2b3;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+.auth-menu-email {
+    display: block;
+
+    overflow: hidden;
+
+    color: #344054;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.auth-menu-item {
+    width: 100%;
+
+    min-height: 36px;
+
+    padding: 0 10px;
+
+    display: flex;
+    align-items: center;
+
+    border: none;
+    border-radius: 7px;
+
+    background: transparent;
+    color: #344054;
+
+    text-decoration: none;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.auth-menu-item:hover {
+    background: #f2f4f7;
+}
+
+
+.auth-menu-item.disabled {
+    color: #98a2b3;
+
+    cursor: default;
+}
+
+
+.auth-menu-item.disabled:hover {
+    background: transparent;
+}
+
+
+.auth-menu-item.logout {
+    color: #b42318;
+}
+
+
+/* =====================================================
+   LOADING PLACEHOLDER
+   ===================================================== */
+
+.auth-nav-loading {
+    width: 130px;
+    height: 38px;
+
+    border-radius: 8px;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    #f2f4f7,
+                    #e8edf3,
+                    #f2f4f7
+            );
+
+    background-size: 200% 100%;
+
+    animation:
+            authLoading 1.2s linear infinite;
+}
+
+
+@keyframes authLoading {
+
+    from {
+        background-position: 200% 0;
+    }
+
+    to {
+        background-position: -200% 0;
+    }
+}
+
+
+/* =====================================================
+   DESKTOP HEADER ADJUSTMENT
+   ===================================================== */
+
+.header.auth-header-ready {
+    justify-content: flex-start;
+}
+
+
+.header.auth-header-ready .header-clock {
+    margin-left: 10px;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 650px) {
+
+    /*
+     * Authentication actions are more important than the
+     * live clock on narrow screens.
+     */
+    .header.auth-header-ready .header-clock {
+        display: none;
+    }
+
+
+    .header.auth-header-ready {
+        padding:
+                8px 12px;
+
+        gap: 7px;
+    }
+
+
+    .header.auth-header-ready .header-left {
+        min-width: 0;
+
+        flex: 1;
+    }
+
+
+    .header.auth-header-ready .header-left span {
+        overflow: hidden;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+
+    .auth-nav {
+        flex: 0 0 auto;
+
+        gap: 5px;
+    }
+
+
+    .auth-nav-link {
+        min-height: 34px;
+
+        padding: 0 9px;
+
+        font-size: 10px;
+    }
+
+
+    .auth-account-button {
+        min-height: 35px;
+
+        padding: 3px 7px 3px 4px;
+    }
+
+
+    .auth-avatar {
+        width: 27px;
+        height: 27px;
+
+        font-size: 9px;
+    }
+
+
+    .auth-account-text {
+        display: none;
+    }
+
+
+    .auth-menu {
+        position: fixed;
+
+        top: 60px;
+        right: 10px;
+
+        width: min(
+                230px,
+                calc(100vw - 20px)
+        );
+    }
+
+}
+
+
+@media (max-width: 390px) {
+
+    .auth-nav-link {
+        padding: 0 7px;
+
+        font-size: 9px;
+    }
+
+}
+
+/* =====================================================
+   PROFILE INFORMATION
+   ===================================================== */
+
+.auth-menu-name {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #172033;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+
+.auth-role-badge {
+    display: inline-block;
+
+    margin-bottom: 7px;
+
+    padding: 3px 7px;
+
+    border-radius: 9px;
+
+    background: #eef6ff;
+    color: #1473e6;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+}
+
+
+.auth-menu-email {
+    display: block;
+
+    overflow: hidden;
+
+    color: #667085;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

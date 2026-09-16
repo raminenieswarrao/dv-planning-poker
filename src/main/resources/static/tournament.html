@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tournament | Refinement Poker</title>
+
+    <link rel="stylesheet"
+          href="/css/auth-nav.css">
+
+    <link rel="stylesheet"
+          href="/css/tournaments.css">
+
+    <link rel="stylesheet"
+          href="/css/tournament-detail.css">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<header class="header">
+
+    <a href="/dashboard.html"
+       class="header-left tournament-brand">
+
+        <div class="dv-logo-card">
+            DV
+        </div>
+
+        <span>
+            Refinement Poker
+        </span>
+
+    </a>
+
+
+    <div class="header-clock">
+
+        <div id="currentDate"
+             class="header-date">
+        </div>
+
+        <div class="header-time-row">
+
+            <span id="currentTime"
+                  class="header-live-time">
+            </span>
+
+            <span id="currentTimezone"
+                  class="header-timezone">
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     MAIN PAGE
+     ===================================================== -->
+
+<main id="detailPage"
+      class="tournament-page page-hidden">
+
+
+    <a href="/tournaments.html"
+       class="back-link">
+
+        ← Tournaments
+
+    </a>
+
+
+    <div id="pageMessage"
+         class="page-message"
+         role="alert"
+         aria-live="polite">
+    </div>
+
+
+    <!-- =================================================
+         TOURNAMENT DETAILS
+         ================================================= -->
+
+    <section class="detail-card">
+
+
+        <!-- GAME HERO -->
+
+        <div id="gameHero"
+             class="game-detail-hero hidden">
+
+            <picture id="gameHeroPicture"
+                     class="game-detail-picture hidden">
+
+                <source id="gameHeroAvif"
+                        type="image/avif">
+
+                <img id="gameHeroImage"
+                     class="game-detail-image"
+                     alt="Tournament game">
+
+            </picture>
+
+
+            <div id="gameHeroFallback"
+                 class="game-detail-fallback hidden">
+
+                🏆
+
+            </div>
+
+
+            <div class="game-detail-overlay">
+
+                <span id="gameHeroLabel"
+                      class="game-detail-label">
+
+                    TOURNAMENT
+
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <div class="detail-title-row">
+
+            <div>
+
+                <div id="gameLabel"
+                     class="eyebrow">
+
+                    Tournament
+
+                </div>
+
+
+                <h1 id="tournamentName">
+                    Tournament
+                </h1>
+
+
+                <span id="statusBadge"
+                      class="status-badge">
+
+                    Loading
+
+                </span>
+
+            </div>
+
+
+            <div class="detail-actions">
+
+                <button id="editTournamentButton"
+                        type="button"
+                        class="edit-action hidden">
+
+                    Edit Tournament
+
+                </button>
+
+
+                <button id="deleteTournamentButton"
+                        type="button"
+                        class="delete-action hidden">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- INFO -->
+
+        <div class="detail-info-grid">
+
+            <div class="detail-info-item">
+
+                <span class="info-label">
+                    Date & Time
+                </span>
+
+                <strong id="tournamentDate">
+                    Not set
+                </strong>
+
+            </div>
+
+
+            <div class="detail-info-item">
+
+                <span class="info-label">
+                    Location
+                </span>
+
+                <strong id="tournamentLocation">
+                    Not set
+                </strong>
+
+            </div>
+
+
+            <div class="detail-info-item">
+
+                <span class="info-label">
+                    Game
+                </span>
+
+                <strong id="tournamentGame">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-info-item">
+
+                <span class="info-label">
+                    Format
+                </span>
+
+                <strong id="tournamentFormat">
+                    -
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="description-area">
+
+            <span class="info-label">
+                Description
+            </span>
+
+            <p id="tournamentDescription">
+                No description provided.
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         PARTICIPANTS
+         ================================================= -->
+
+    <section class="participants-card">
+
+        <div class="participants-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    Players
+                </div>
+
+                <h2>
+                    Tournament Participants
+                </h2>
+
+                <p>
+                    Tournament members can manage participants,
+                    matches and scores.
+                </p>
+
+            </div>
+
+
+            <span id="participantCount"
+                  class="count-badge">
+
+                0
+
+            </span>
+
+        </div>
+
+
+        <!-- USER SEARCH -->
+
+        <div id="participantManagement"
+             class="participant-management hidden">
+
+            <label for="userSearchInput">
+                Add Existing User
+            </label>
+
+
+            <div class="search-row">
+
+                <input id="userSearchInput"
+                       type="search"
+                       maxlength="100"
+                       autocomplete="off"
+                       placeholder="Search user by name...">
+
+                <button id="searchUserButton"
+                        type="button">
+
+                    Search
+
+                </button>
+
+            </div>
+
+
+            <div id="searchMessage"
+                 class="search-message">
+            </div>
+
+
+            <div id="searchResults"
+                 class="search-results">
+            </div>
+
+        </div>
+
+
+        <!-- PARTICIPANT LIST -->
+
+        <div id="participantList"
+             class="participant-list">
+        </div>
+
+
+        <div id="participantEmptyState"
+             class="participant-empty hidden">
+
+            No participants yet.
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         PICKLEBALL MATCHES
+         ================================================= -->
+
+    <section id="matchesSection"
+             class="matches-card hidden">
+
+
+        <div class="matches-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    Pickleball
+                </div>
+
+                <h2>
+                    Matches & Scores
+                </h2>
+
+                <p>
+                    Create matches using tournament participants
+                    and record completed game scores.
+                </p>
+
+            </div>
+
+
+            <div class="matches-header-actions">
+
+                <span id="matchCount"
+                      class="count-badge">
+
+                    0
+
+                </span>
+
+
+                <button id="createMatchButton"
+                        type="button"
+                        class="create-match-button hidden">
+
+                    + Create Match
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div id="matchesList"
+             class="matches-list">
+        </div>
+
+
+        <div id="matchesEmptyState"
+             class="matches-empty">
+
+            <div class="matches-empty-icon">
+                🏓
+            </div>
+
+            <strong>
+                No matches created yet
+            </strong>
+
+            <span>
+                Create the first match when players are ready.
+            </span>
+
+        </div>
+
+    </section>
+
+
+    <!-- =================================================
+         PICKLEBALL STANDINGS
+         ================================================= -->
+
+    <section id="standingsSection"
+             class="standings-card hidden">
+
+        <div class="standings-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    Pickleball
+                </div>
+
+                <h2>
+                    Tournament Standings
+                </h2>
+
+                <p>
+                    Calculated from completed Singles matches.
+                </p>
+
+            </div>
+
+            <span id="completedMatchCount"
+                  class="count-badge">
+                0
+            </span>
+
+        </div>
+
+
+        <div id="standingsSummary"
+             class="standings-summary hidden">
+
+            <div id="standingsLeaderCard"
+                 class="standings-leader-card">
+
+                <div id="standingsLeaderIcon"
+                     class="standings-leader-icon">
+                    🏅
+                </div>
+
+                <div>
+
+                    <div id="standingsLeaderLabel"
+                         class="standings-leader-label">
+                        Current Leader
+                    </div>
+
+                    <div id="standingsLeaderName"
+                         class="standings-leader-name">
+                        -
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="standings-completed-card">
+
+                <div class="standings-completed-value"
+                     id="standingsCompletedMatches">
+                    0
+                </div>
+
+                <div class="standings-completed-label">
+                    Completed Matches
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div id="standingsTieMessage"
+             class="standings-tie-message hidden">
+        </div>
+
+
+        <div id="standingsTableWrap"
+             class="standings-table-wrap hidden">
+
+            <table class="standings-table">
+
+                <thead>
+
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th title="Matches Played">MP</th>
+                    <th title="Matches Won">W</th>
+                    <th title="Matches Lost">L</th>
+                    <th title="Games Won">GW</th>
+                    <th title="Games Lost">GL</th>
+                    <th title="Game Differential">+/-</th>
+                </tr>
+
+                </thead>
+
+                <tbody id="standingsTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div id="standingsEmptyState"
+             class="standings-empty">
+
+            <div class="standings-empty-icon">
+                🏆
+            </div>
+
+            <strong>
+                No completed Singles matches yet
+            </strong>
+
+            <span>
+                Standings will appear after the first Singles match is completed.
+            </span>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =====================================================
+     EDIT TOURNAMENT MODAL
+     ===================================================== -->
+
+<div id="editModal"
+     class="modal-backdrop hidden">
+
+    <section class="modal-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="editTournamentTitle">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    Tournament
+                </div>
+
+                <h2 id="editTournamentTitle">
+                    Edit Tournament
+                </h2>
+
+            </div>
+
+
+            <button id="closeEditButton"
+                    class="close-button"
+                    type="button"
+                    aria-label="Close">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form id="editTournamentForm"
+              novalidate>
+
+
+            <div class="form-row">
+
+
+                <div class="form-group">
+
+                    <label for="editName">
+                        Tournament Name
+                    </label>
+
+                    <input id="editName"
+                           type="text"
+                           maxlength="150"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editGameType">
+                        Game
+                    </label>
+
+                    <select id="editGameType"
+                            required>
+
+                        <option value="PICKLEBALL">
+                            Pickleball
+                        </option>
+
+                        <option value="PING_PONG">
+                            Ping Pong
+                        </option>
+
+                        <option value="BADMINTON">
+                            Badminton
+                        </option>
+
+                        <option value="BASKETBALL">
+                            Basketball
+                        </option>
+
+                        <option value="CRICKET">
+                            Cricket
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+
+                <div class="form-group">
+
+                    <label for="editFormat">
+                        Format
+                    </label>
+
+                    <select id="editFormat">
+
+                        <option value="">
+                            Select format
+                        </option>
+
+                        <option value="SINGLES">
+                            Singles
+                        </option>
+
+                        <option value="DOUBLES">
+                            Doubles
+                        </option>
+
+                        <option value="TEAM">
+                            Team
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="editStatus">
+                        Status
+                    </label>
+
+                    <select id="editStatus">
+
+                        <option value="REGISTRATION_OPEN">
+                            Registration Open
+                        </option>
+
+                        <option value="REGISTRATION_CLOSED">
+                            Registration Closed
+                        </option>
+
+                        <option value="IN_PROGRESS">
+                            In Progress
+                        </option>
+
+                        <option value="COMPLETED">
+                            Completed
+                        </option>
+
+                        <option value="CANCELLED">
+                            Cancelled
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="editScheduledAt">
+                    Date & Time
+                </label>
+
+                <input id="editScheduledAt"
+                       type="datetime-local">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="editLocation">
+                    Location
+                </label>
+
+                <input id="editLocation"
+                       type="text"
+                       maxlength="200">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="editDescription">
+                    Description
+                </label>
+
+                <textarea id="editDescription"
+                          maxlength="2000"
+                          rows="4">
+                </textarea>
+
+            </div>
+
+
+            <div id="editMessage"
+                 class="form-message"
+                 role="alert"
+                 aria-live="polite">
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button id="cancelEditButton"
+                        class="secondary-button"
+                        type="button">
+
+                    Cancel
+
+                </button>
+
+
+                <button id="saveEditButton"
+                        class="primary-button"
+                        type="submit">
+
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     CREATE / EDIT PICKLEBALL MATCH MODAL
+     ===================================================== -->
+
+<div id="matchModal"
+     class="modal-backdrop hidden">
+
+    <section class="modal-card match-modal-card"
+             role="dialog"
+             aria-modal="true"
+             aria-labelledby="matchModalTitle">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <div class="eyebrow">
+                    Pickleball
+                </div>
+
+                <h2 id="matchModalTitle">
+                    Create Match
+                </h2>
+
+            </div>
+
+
+            <button id="closeMatchButton"
+                    class="close-button"
+                    type="button"
+                    aria-label="Close">
+
+                ×
+
+            </button>
+
+        </div>
+
+
+        <form id="matchForm"
+              novalidate>
+
+
+            <!-- BASIC MATCH DETAILS -->
+
+            <div class="form-row">
+
+
+                <div class="form-group">
+
+                    <label for="matchRoundName">
+                        Round Name
+                    </label>
+
+                    <input id="matchRoundName"
+                           type="text"
+                           maxlength="50"
+                           placeholder="Round 1">
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="matchNumber">
+                        Match Number
+                    </label>
+
+                    <input id="matchNumber"
+                           type="number"
+                           min="1"
+                           max="10000"
+                           required>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-row">
+
+
+                <div class="form-group">
+
+                    <label for="matchFormat">
+                        Match Format
+                    </label>
+
+                    <select id="matchFormat"
+                            required>
+
+                        <option value="SINGLES">
+                            Singles
+                        </option>
+
+                        <option value="DOUBLES">
+                            Doubles
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="matchScheduledAt">
+                        Scheduled Date & Time
+                    </label>
+
+                    <input id="matchScheduledAt"
+                           type="datetime-local">
+
+                </div>
+
+            </div>
+
+
+            <!-- RULES -->
+
+            <div class="match-rules-panel">
+
+                <div class="match-rules-title">
+                    Match Rules
+                </div>
+
+
+                <div class="match-rules-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="bestOfGames">
+                            Best Of
+                        </label>
+
+                        <select id="bestOfGames">
+
+                            <option value="1">
+                                1 Game
+                            </option>
+
+                            <option value="3"
+                                    selected>
+                                3 Games
+                            </option>
+
+                            <option value="5">
+                                5 Games
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="pointsToWin">
+                            Points To Win
+                        </label>
+
+                        <input id="pointsToWin"
+                               type="number"
+                               min="1"
+                               max="100"
+                               value="11">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="winBy">
+                            Win By
+                        </label>
+
+                        <input id="winBy"
+                               type="number"
+                               min="1"
+                               max="20"
+                               value="2">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="matchStatus">
+                            Status
+                        </label>
+
+                        <select id="matchStatus">
+
+                            <option value="SCHEDULED">
+                                Scheduled
+                            </option>
+
+                            <option value="IN_PROGRESS">
+                                In Progress
+                            </option>
+
+                            <option value="COMPLETED">
+                                Completed
+                            </option>
+
+                            <option value="CANCELLED">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PLAYERS -->
+
+            <div class="match-team-container">
+
+
+                <section class="match-team-panel">
+
+                    <div class="team-title">
+                        Team 1
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="team1Player1">
+                            Player 1
+                        </label>
+
+                        <select id="team1Player1"
+                                required>
+                        </select>
+
+                    </div>
+
+
+                    <div id="team1Player2Group"
+                         class="form-group hidden">
+
+                        <label for="team1Player2">
+                            Player 2
+                        </label>
+
+                        <select id="team1Player2">
+                        </select>
+
+                    </div>
+
+                </section>
+
+
+                <div class="versus-badge">
+                    VS
+                </div>
+
+
+                <section class="match-team-panel">
+
+                    <div class="team-title">
+                        Team 2
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="team2Player1">
+                            Player 1
+                        </label>
+
+                        <select id="team2Player1"
+                                required>
+                        </select>
+
+                    </div>
+
+
+                    <div id="team2Player2Group"
+                         class="form-group hidden">
+
+                        <label for="team2Player2">
+                            Player 2
+                        </label>
+
+                        <select id="team2Player2">
+                        </select>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- GAME SCORES -->
+
+            <div class="score-entry-section">
+
+
+                <div class="score-entry-header">
+
+                    <div>
+
+                        <h3>
+                            Game Scores
+                        </h3>
+
+                        <p>
+                            Add only completed games.
+                            Winner is calculated automatically.
+                        </p>
+
+                    </div>
+
+
+                    <button id="addGameScoreButton"
+                            type="button"
+                            class="add-game-score-button">
+
+                        + Add Game Score
+
+                    </button>
+
+                </div>
+
+
+                <div id="gameScoresContainer"
+                     class="game-scores-container">
+                </div>
+
+            </div>
+
+
+            <div id="matchMessage"
+                 class="form-message"
+                 role="alert"
+                 aria-live="polite">
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button id="cancelMatchButton"
+                        class="secondary-button"
+                        type="button">
+
+                    Cancel
+
+                </button>
+
+
+                <button id="saveMatchButton"
+                        class="primary-button"
+                        type="submit">
+
+                    Create Match
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+</div>
+
+
+<!-- =====================================================
+     LOADING
+     ===================================================== -->
+
+<div id="loadingState"
+     class="page-loading">
+
+    <div class="loading-logo">
+        DV
+    </div>
+
+    <div>
+        Loading tournament...
+    </div>
+
+</div>
+
+
+<footer class="footer-credit">
+    Designed and developed by Eswar Ramineni
+</footer>
+
+
+<script src="/js/auth-nav.js"
+        defer>
+</script>
+
+<script src="/js/tournament-detail.js"
+        defer>
+</script>
+
+
+</body>
+
+</html>

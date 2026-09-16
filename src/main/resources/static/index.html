@@ -60,6 +60,46 @@
             font-weight: 700;
         }
 
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+
+            color: #172033;
+            text-decoration: none;
+        }
+
+        .brand-link:hover {
+            color: #1473e6;
+        }
+
+        .header-dashboard-link {
+            margin-left: 8px;
+            padding: 8px 12px;
+
+            border: 1px solid #d0d5dd;
+            border-radius: 8px;
+
+            background: #ffffff;
+            color: #344054;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            text-decoration: none;
+
+            transition:
+                    background 0.15s ease,
+                    border-color 0.15s ease,
+                    color 0.15s ease;
+        }
+
+        .header-dashboard-link:hover {
+            border-color: #1473e6;
+            background: #eef6ff;
+            color: #1473e6;
+        }
+
         .dv-logo-card {
             width: 38px;
             height: 46px;
@@ -1315,6 +1355,34 @@
                 font-size: 18px;
             }
 
+            .header-dashboard-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+
+                margin-left: 2px;
+                padding: 6px 8px;
+
+                font-size: 10px;
+                white-space: nowrap;
+            }
+
+            .brand-link {
+                gap: 8px;
+            }
+
+            .header-left {
+                gap: 6px;
+            }
+
+            .header-left .brand-link span {
+                max-width: 150px;
+
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
             .header-clock {
                 padding-left: 12px;
             }
@@ -1444,6 +1512,11 @@
         }
 
     </style>
+    <link rel="stylesheet"
+          href="/css/auth-nav.css">
+
+    <link rel="stylesheet"
+          href="/css/public-home.css">
 </head>
 
 
@@ -1453,13 +1526,26 @@
 
     <div class="header-left">
 
-        <div class="dv-logo-card">
-            DV
-        </div>
+        <a href="/dashboard.html"
+           class="brand-link"
+           title="Back to Dashboard">
 
-        <span>
-            Refinement Poker
-        </span>
+            <div class="dv-logo-card">
+                DV
+            </div>
+
+            <span>
+                Refinement Poker
+            </span>
+
+        </a>
+
+        <a href="/dashboard.html"
+           class="header-dashboard-link">
+
+            ← Dashboard
+
+        </a>
 
     </div>
 
@@ -1889,6 +1975,284 @@
     </div>
 
 </div>
+
+
+
+<!-- =====================================================
+     PUBLIC TOURNAMENT SHOWCASE
+     Visible without login.
+     ===================================================== -->
+
+<section id="publicTournamentSection"
+         class="public-showcase">
+
+    <div class="public-showcase-card">
+
+        <div class="public-switch"
+             role="tablist"
+             aria-label="Tournament results">
+
+            <button id="recentTournamentTab"
+                    class="public-switch-button active"
+                    type="button"
+                    role="tab"
+                    aria-selected="true">
+                Recent Tournament
+            </button>
+
+            <button id="overallScoreboardTab"
+                    class="public-switch-button"
+                    type="button"
+                    role="tab"
+                    aria-selected="false">
+                Overall Scoreboard
+            </button>
+
+        </div>
+
+
+        <!-- RECENT TOURNAMENT -->
+
+        <section id="recentTournamentPanel"
+                 class="public-tab-panel">
+
+            <div class="public-panel-heading">
+
+                <div>
+                    <div class="public-eyebrow">
+                        Pickleball Results
+                    </div>
+
+                    <h2>
+                        Recent Tournament
+                    </h2>
+
+                    <p id="recentTournamentCountText">
+                        Loading recent completed tournaments...
+                    </p>
+                </div>
+
+                <span id="recentTournamentCount"
+                      class="public-count-badge">
+                    0
+                </span>
+
+            </div>
+
+            <div id="recentTournamentLoading"
+                 class="public-state">
+                <div class="public-state-icon">🏓</div>
+                <strong>Loading recent results...</strong>
+                <span>Checking the latest completed tournament day.</span>
+            </div>
+
+            <div id="recentTournamentEmpty"
+                 class="public-state hidden">
+                <div class="public-state-icon">🏆</div>
+                <strong>No recent tournament results</strong>
+                <span>
+                    Completed tournaments from today, yesterday,
+                    or two days ago will appear here.
+                </span>
+            </div>
+
+            <div id="recentTournamentError"
+                 class="public-state hidden">
+                <div class="public-state-icon">⚠️</div>
+                <strong>Results are temporarily unavailable</strong>
+                <span>Planning Poker is still available above.</span>
+            </div>
+
+            <div id="recentTournamentContent"
+                 class="recent-results-layout hidden">
+
+                <div class="recent-table-card">
+
+                    <div class="recent-table-heading">
+                        <strong id="recentTournamentDayLabel">
+                            Recent
+                        </strong>
+                        <span>
+                            Select a tournament result.
+                        </span>
+                    </div>
+
+                    <div class="recent-table-scroll">
+                        <table class="recent-tournament-table">
+                            <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Tournament</th>
+                                <th>Format</th>
+                                <th>Result</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="recentTournamentTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+
+                <article class="recent-highlight-card">
+
+                    <div class="recent-highlight-top">
+
+                        <div>
+                            <div class="public-eyebrow">
+                                Tournament Highlight
+                            </div>
+
+                            <h3 id="recentHighlightTitle">
+                                Pickleball Tournament
+                            </h3>
+
+                            <div id="recentHighlightMeta"
+                                 class="recent-highlight-meta">
+                            </div>
+                        </div>
+
+                        <span class="recent-completed-badge">
+                            COMPLETED
+                        </span>
+
+                    </div>
+
+                    <div id="recentResultSummary"
+                         class="recent-result-summary">
+                    </div>
+
+                    <div id="recentScoreStrip"
+                         class="public-score-strip">
+                    </div>
+
+                    <!-- Singles uses the user's looping animation. -->
+                    <div id="victoryAnimationShell"
+                         class="victory-animation-shell hidden">
+
+                        <canvas id="victoryCanvas"
+                                class="victory-canvas"
+                                width="1280"
+                                height="720"
+                                aria-label="Pickleball winner celebration animation">
+                        </canvas>
+
+                    </div>
+
+                    <!-- Doubles currently shows the winning team clearly. -->
+                    <div id="teamResultPanel"
+                         class="team-result-panel hidden">
+                    </div>
+
+                    <div id="tieResultPanel"
+                         class="tie-result-panel hidden">
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- OVERALL SCOREBOARD -->
+
+        <section id="overallScoreboardPanel"
+                 class="public-tab-panel hidden">
+
+            <div class="public-panel-heading">
+                <div>
+                    <div class="public-eyebrow">
+                        Lifetime Match Results
+                    </div>
+
+                    <h2>
+                        Overall Scoreboard
+                    </h2>
+
+                    <p>
+                        Singles and Doubles are ranked separately.
+                        Every completed match contributes to the player record.
+                    </p>
+                </div>
+            </div>
+
+            <div id="scoreboardLoading"
+                 class="public-state">
+                <div class="public-state-icon">📊</div>
+                <strong>Loading scoreboard...</strong>
+            </div>
+
+            <div id="scoreboardError"
+                 class="public-state hidden">
+                <div class="public-state-icon">⚠️</div>
+                <strong>Scoreboard is temporarily unavailable</strong>
+            </div>
+
+            <div id="scoreboardContent"
+                 class="overall-scoreboard-grid hidden">
+
+                <section class="scoreboard-card">
+                    <div class="scoreboard-card-header">
+                        <h3>Singles Scoreboard</h3>
+                        <span id="singlesMatchCount">0 completed matches</span>
+                    </div>
+
+                    <div class="scoreboard-scroll">
+                        <table class="scoreboard-table">
+                            <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th class="player-column">Player</th>
+                                <th>MP</th>
+                                <th>W</th>
+                                <th>L</th>
+                                <th class="optional-mobile-stat">GW</th>
+                                <th class="optional-mobile-stat">GL</th>
+                                <th>+/-</th>
+                                <th>Win %</th>
+                            </tr>
+                            </thead>
+                            <tbody id="singlesScoreboardBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="scoreboard-card">
+                    <div class="scoreboard-card-header">
+                        <h3>Doubles Scoreboard</h3>
+                        <span id="doublesMatchCount">0 completed matches</span>
+                    </div>
+
+                    <div class="scoreboard-scroll">
+                        <table class="scoreboard-table">
+                            <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th class="player-column">Player</th>
+                                <th>MP</th>
+                                <th>W</th>
+                                <th>L</th>
+                                <th class="optional-mobile-stat">GW</th>
+                                <th class="optional-mobile-stat">GL</th>
+                                <th>+/-</th>
+                                <th>Win %</th>
+                            </tr>
+                            </thead>
+                            <tbody id="doublesScoreboardBody"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</section>
 
 
 <div class="footer-credit">
@@ -5107,7 +5471,17 @@
 
 </script>
 
+<script src="/js/pickleball-victory-animation.js"
+        defer>
+</script>
 
+<script src="/js/public-home.js"
+        defer>
+</script>
+
+<script src="/js/auth-nav.js"
+        defer>
+</script>
 </body>
 
 </html>

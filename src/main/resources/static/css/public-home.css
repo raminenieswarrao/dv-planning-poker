@@ -1,0 +1,1148 @@
+/* =====================================================
+   PUBLIC HOME TOURNAMENT SHOWCASE
+   ===================================================== */
+
+.public-showcase {
+    width: min(
+            1180px,
+            calc(100% - 36px)
+    );
+
+    margin: 0 auto 76px;
+}
+
+
+.public-showcase.hidden {
+    display: none !important;
+}
+
+
+.public-showcase-card {
+    overflow: hidden;
+
+    border: 1px solid #dfe6ee;
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 8px 28px
+            rgba(16, 24, 40, 0.08);
+}
+
+
+/* =====================================================
+   TWO MAIN BUTTONS
+   ===================================================== */
+
+.public-switch {
+    padding: 10px;
+
+    display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+
+    border-bottom: 1px solid #e7ecf2;
+
+    background: #f7f9fc;
+}
+
+
+.public-switch-button {
+    min-height: 44px;
+
+    padding: 0 14px;
+
+    border: 1px solid transparent;
+    border-radius: 10px;
+
+    background: transparent;
+
+    color: #667085;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+            background 0.15s ease,
+            color 0.15s ease,
+            box-shadow 0.15s ease;
+}
+
+
+.public-switch-button:hover {
+    background: #eef4fb;
+    color: #1473e6;
+}
+
+
+.public-switch-button.active {
+    border-color: #cfe3ff;
+
+    background: #1473e6;
+
+    color: #ffffff;
+
+    box-shadow:
+            0 3px 10px
+            rgba(20, 115, 230, 0.22);
+}
+
+
+/* =====================================================
+   PANELS
+   ===================================================== */
+
+.public-tab-panel {
+    padding: 24px;
+}
+
+
+.public-tab-panel.hidden {
+    display: none !important;
+}
+
+
+.public-panel-heading {
+    margin-bottom: 18px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 18px;
+}
+
+
+.public-eyebrow {
+    margin-bottom: 5px;
+
+    color: #1473e6;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.75px;
+
+    text-transform: uppercase;
+}
+
+
+.public-panel-heading h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 23px;
+}
+
+
+.public-panel-heading p {
+    margin: 6px 0 0;
+
+    color: #667085;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+.public-count-badge {
+    flex: 0 0 auto;
+
+    padding: 7px 10px;
+
+    border-radius: 12px;
+
+    background: #eef6ff;
+
+    color: #1473e6;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   LOADING / EMPTY / ERROR
+   ===================================================== */
+
+.public-state {
+    padding: 42px 18px;
+
+    border: 1px dashed #d8dee7;
+    border-radius: 13px;
+
+    background: #f8fafc;
+
+    color: #667085;
+
+    text-align: center;
+}
+
+
+.public-state.hidden {
+    display: none !important;
+}
+
+
+.public-state strong,
+.public-state span {
+    display: block;
+}
+
+
+.public-state strong {
+    margin-bottom: 6px;
+
+    color: #344054;
+
+    font-size: 14px;
+}
+
+
+.public-state span {
+    font-size: 11px;
+
+    line-height: 1.5;
+}
+
+
+.public-state-icon {
+    margin-bottom: 10px;
+
+    font-size: 30px;
+}
+
+
+/* =====================================================
+   RECENT RESULTS LAYOUT
+   ===================================================== */
+
+.recent-results-layout {
+    display: grid;
+
+    grid-template-columns:
+            minmax(360px, 0.85fr)
+            minmax(0, 1.45fr);
+
+    gap: 18px;
+
+    align-items: start;
+}
+
+
+.recent-results-layout.hidden {
+    display: none !important;
+}
+
+
+/* =====================================================
+   RECENT TOURNAMENT TABLE
+   ===================================================== */
+
+.recent-table-card,
+.recent-highlight-card,
+.scoreboard-card {
+    border: 1px solid #e1e7ee;
+    border-radius: 14px;
+
+    background: #ffffff;
+}
+
+
+.recent-table-card {
+    overflow: hidden;
+}
+
+
+.recent-table-heading {
+    padding: 15px 16px;
+
+    border-bottom: 1px solid #edf0f4;
+
+    background: #f8fafc;
+}
+
+
+.recent-table-heading strong {
+    display: block;
+
+    color: #344054;
+
+    font-size: 13px;
+}
+
+
+.recent-table-heading span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #98a2b3;
+
+    font-size: 10px;
+}
+
+
+.recent-table-scroll {
+    overflow-x: auto;
+}
+
+
+.recent-tournament-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+
+.recent-tournament-table th {
+    padding: 9px 12px;
+
+    background: #ffffff;
+
+    color: #98a2b3;
+
+    text-align: left;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 0.45px;
+
+    text-transform: uppercase;
+}
+
+
+.recent-tournament-table td {
+    padding: 11px 12px;
+
+    border-top: 1px solid #f0f2f5;
+
+    color: #475467;
+
+    font-size: 10px;
+
+    vertical-align: middle;
+}
+
+
+.recent-tournament-row {
+    cursor: pointer;
+
+    transition:
+            background 0.12s ease;
+}
+
+
+.recent-tournament-row:hover {
+    background: #f8fbff;
+}
+
+
+.recent-tournament-row:focus {
+    outline: 2px solid #1473e6;
+    outline-offset: -2px;
+}
+
+
+.recent-tournament-row.selected {
+    background: #eef6ff;
+}
+
+
+.recent-tournament-row.selected td:first-child {
+    box-shadow:
+            inset 3px 0 0
+            #1473e6;
+}
+
+
+.recent-name {
+    color: #172033;
+
+    font-weight: 800;
+}
+
+
+.recent-format-badge {
+    display: inline-flex;
+
+    padding: 4px 7px;
+
+    border-radius: 8px;
+
+    background: #f2f4f7;
+
+    color: #475467;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   RECENT TOURNAMENT HIGHLIGHT
+   ===================================================== */
+
+.recent-highlight-card {
+    overflow: hidden;
+}
+
+
+.recent-highlight-top {
+    padding: 18px 19px;
+
+    display: flex;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    border-bottom: 1px solid #edf0f4;
+
+    background:
+            linear-gradient(
+                    145deg,
+                    #ffffff,
+                    #f5f9ff
+            );
+}
+
+
+.recent-highlight-top h3 {
+    margin: 0 0 5px;
+
+    color: #172033;
+
+    font-size: 19px;
+}
+
+
+.recent-highlight-meta {
+    color: #667085;
+
+    font-size: 10px;
+}
+
+
+.recent-completed-badge {
+    align-self: flex-start;
+
+    padding: 5px 8px;
+
+    border-radius: 9px;
+
+    background: #ecfdf3;
+
+    color: #027a48;
+
+    font-size: 8px;
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   WINNER / RUNNER-UP
+   ===================================================== */
+
+.recent-result-summary {
+    padding: 18px 19px;
+
+    display: grid;
+
+    grid-template-columns:
+            minmax(0, 1fr)
+            56px
+            minmax(0, 1fr);
+
+    gap: 12px;
+
+    align-items: center;
+}
+
+
+.result-person-card {
+    min-width: 0;
+
+    padding: 15px;
+
+    border: 1px solid #e3e8ef;
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    text-align: center;
+}
+
+
+.result-person-card.winner {
+    border-color: #f7d76b;
+
+    background:
+            linear-gradient(
+                    145deg,
+                    #fffdf3,
+                    #fff8d8
+            );
+
+    box-shadow:
+            0 4px 16px
+            rgba(245, 190, 40, 0.12);
+}
+
+
+.result-label {
+    margin-bottom: 8px;
+
+    color: #98a2b3;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 0.55px;
+
+    text-transform: uppercase;
+}
+
+
+.result-person-card.winner .result-label {
+    color: #9a6b00;
+}
+
+
+.result-name {
+    overflow: hidden;
+
+    color: #172033;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    line-height: 1.35;
+
+    text-overflow: ellipsis;
+}
+
+
+.result-record {
+    margin-top: 7px;
+
+    color: #667085;
+
+    font-size: 9px;
+}
+
+
+.result-versus {
+    color: #98a2b3;
+
+    text-align: center;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   GAME SCORE CHIPS
+   ===================================================== */
+
+.public-score-strip {
+    padding: 0 19px 18px;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 7px;
+}
+
+
+.public-score-chip {
+    min-width: 80px;
+
+    padding: 7px 9px;
+
+    border: 1px solid #e4e7ec;
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+
+.public-score-chip span {
+    display: block;
+
+    color: #98a2b3;
+
+    font-size: 7px;
+    font-weight: 800;
+
+    letter-spacing: 0.35px;
+
+    text-transform: uppercase;
+}
+
+
+.public-score-chip strong {
+    display: block;
+
+    margin-top: 2px;
+
+    color: #172033;
+
+    font-size: 12px;
+}
+
+
+/* =====================================================
+   VICTORY ANIMATION
+   ===================================================== */
+
+.victory-animation-shell {
+    margin: 0 19px 19px;
+
+    overflow: hidden;
+
+    border: 1px solid #203d56;
+    border-radius: 13px;
+
+    background: #04101d;
+
+    box-shadow:
+            0 8px 25px
+            rgba(4, 16, 29, 0.18);
+}
+
+
+.victory-animation-shell.hidden {
+    display: none !important;
+}
+
+
+.victory-canvas {
+    width: 100%;
+    height: auto;
+
+    display: block;
+
+    aspect-ratio: 16 / 9;
+}
+
+
+/* =====================================================
+   DOUBLES WINNER PANEL
+   ===================================================== */
+
+.team-result-panel {
+    margin: 0 19px 19px;
+
+    padding: 22px;
+
+    border: 1px solid #f7d76b;
+    border-radius: 13px;
+
+    background:
+            linear-gradient(
+                    145deg,
+                    #fffdf4,
+                    #fff7d1
+            );
+
+    text-align: center;
+}
+
+
+.team-result-panel.hidden {
+    display: none !important;
+}
+
+
+.team-result-icon {
+    margin-bottom: 8px;
+
+    font-size: 28px;
+}
+
+
+.team-result-panel .result-label {
+    color: #9a6b00;
+}
+
+
+.team-result-panel strong {
+    display: block;
+
+    color: #172033;
+
+    font-size: 16px;
+
+    line-height: 1.4;
+}
+
+
+.team-result-panel span {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #667085;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   TIE RESULT
+   ===================================================== */
+
+.tie-result-panel {
+    margin: 0 19px 19px;
+
+    padding: 22px;
+
+    border: 1px solid #fed7aa;
+    border-radius: 13px;
+
+    background: #fff7ed;
+
+    text-align: center;
+}
+
+
+.tie-result-panel.hidden {
+    display: none !important;
+}
+
+
+.tie-result-icon {
+    margin-bottom: 8px;
+
+    font-size: 28px;
+}
+
+
+.tie-result-panel strong {
+    display: block;
+
+    color: #172033;
+
+    font-size: 16px;
+}
+
+
+.tie-result-panel span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #667085;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* =====================================================
+   OVERALL SCOREBOARD
+   ===================================================== */
+
+.overall-scoreboard-grid {
+    display: grid;
+
+    gap: 18px;
+}
+
+
+.overall-scoreboard-grid.hidden {
+    display: none !important;
+}
+
+
+.scoreboard-card {
+    overflow: hidden;
+}
+
+
+.scoreboard-card-header {
+    padding: 14px 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    border-bottom: 1px solid #e9edf2;
+
+    background: #f8fafc;
+}
+
+
+.scoreboard-card-header h3 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 15px;
+}
+
+
+.scoreboard-card-header span {
+    color: #98a2b3;
+
+    font-size: 9px;
+}
+
+
+.scoreboard-scroll {
+    overflow-x: auto;
+}
+
+
+.scoreboard-table {
+    width: 100%;
+
+    min-width: 720px;
+
+    border-collapse: collapse;
+}
+
+
+.scoreboard-table th {
+    padding: 10px 11px;
+
+    color: #98a2b3;
+
+    text-align: center;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 0.4px;
+
+    text-transform: uppercase;
+}
+
+
+.scoreboard-table th.player-column {
+    text-align: left;
+}
+
+
+.scoreboard-table td {
+    padding: 11px;
+
+    border-top: 1px solid #f0f2f5;
+
+    color: #475467;
+
+    text-align: center;
+
+    font-size: 10px;
+}
+
+
+.scoreboard-table td.player-cell {
+    min-width: 190px;
+
+    text-align: left;
+}
+
+
+.scoreboard-table tbody tr {
+    transition:
+            background 0.12s ease;
+}
+
+
+.scoreboard-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+
+.scoreboard-table tbody tr:first-child {
+    background: #fffdf4;
+}
+
+
+.score-rank {
+    color: #1473e6;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+
+.scoreboard-table tbody tr:first-child .score-rank {
+    color: #a56f00;
+}
+
+
+.score-player-name {
+    color: #172033;
+
+    font-weight: 800;
+}
+
+
+.score-win-rate {
+    color: #067647;
+
+    font-weight: 800;
+}
+
+
+.score-diff.positive {
+    color: #067647;
+
+    font-weight: 800;
+}
+
+
+.score-diff.negative {
+    color: #b42318;
+
+    font-weight: 800;
+}
+
+
+/* =====================================================
+   TABLE SCROLLBAR
+   ===================================================== */
+
+.recent-table-scroll::-webkit-scrollbar,
+.scoreboard-scroll::-webkit-scrollbar {
+    height: 7px;
+}
+
+
+.recent-table-scroll::-webkit-scrollbar-track,
+.scoreboard-scroll::-webkit-scrollbar-track {
+    background: #f2f4f7;
+}
+
+
+.recent-table-scroll::-webkit-scrollbar-thumb,
+.scoreboard-scroll::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+
+    background: #cfd7e3;
+}
+
+
+/* =====================================================
+   TABLET
+   ===================================================== */
+
+@media (max-width: 950px) {
+
+    .recent-results-layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 650px) {
+
+    .public-showcase {
+        width:
+                calc(100% - 20px);
+
+        margin-bottom: 58px;
+    }
+
+
+    .public-showcase-card {
+        border-radius: 14px;
+    }
+
+
+    /* ================================================
+       TWO BUTTONS
+       ================================================ */
+
+    .public-switch {
+        padding: 7px;
+
+        gap: 6px;
+    }
+
+
+    .public-switch-button {
+        min-height: 40px;
+
+        padding: 0 7px;
+
+        font-size: 10px;
+    }
+
+
+    /* ================================================
+       PANEL
+       ================================================ */
+
+    .public-tab-panel {
+        padding: 14px;
+    }
+
+
+    .public-panel-heading {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .public-panel-heading h2 {
+        font-size: 20px;
+    }
+
+
+    .public-panel-heading p {
+        font-size: 10px;
+    }
+
+
+    /* ================================================
+       RECENT TABLE
+       ================================================ */
+
+    .recent-table-card {
+        overflow: hidden;
+    }
+
+
+    /*
+     * Time is less important on very small screens.
+     * The user still sees completion time in the detail panel.
+     */
+    .recent-tournament-table th:nth-child(1),
+    .recent-tournament-table td:nth-child(1) {
+        display: none;
+    }
+
+
+    .recent-tournament-table th,
+    .recent-tournament-table td {
+        padding: 10px 9px;
+    }
+
+
+    .recent-tournament-table td {
+        font-size: 9px;
+    }
+
+
+    .recent-name {
+        font-size: 9px;
+    }
+
+
+    /* ================================================
+       HIGHLIGHT
+       ================================================ */
+
+    .recent-highlight-top {
+        padding: 15px;
+    }
+
+
+    .recent-highlight-top h3 {
+        font-size: 17px;
+    }
+
+
+    .recent-highlight-meta {
+        font-size: 9px;
+    }
+
+
+    /* ================================================
+       WINNER / RUNNER-UP STACK
+       ================================================ */
+
+    .recent-result-summary {
+        grid-template-columns: 1fr;
+
+        padding: 14px;
+    }
+
+
+    .result-versus {
+        margin: -2px 0;
+    }
+
+
+    .result-name {
+        font-size: 13px;
+    }
+
+
+    /* ================================================
+       SCORES
+       ================================================ */
+
+    .public-score-strip {
+        padding:
+                0 14px 14px;
+    }
+
+
+    /* ================================================
+       ANIMATION
+       ================================================ */
+
+    .victory-animation-shell,
+    .team-result-panel,
+    .tie-result-panel {
+        margin:
+                0 14px 14px;
+    }
+
+
+    /* ================================================
+       SCOREBOARD
+       ================================================ */
+
+    .scoreboard-card-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .scoreboard-table {
+        min-width: 590px;
+    }
+
+
+    /*
+     * On mobile hide GW and GL.
+     *
+     * MP / W / L / +/- / Win % remain visible.
+     */
+    .scoreboard-table .optional-mobile-stat {
+        display: none;
+    }
+
+
+    .scoreboard-table td.player-cell {
+        min-width: 165px;
+    }
+
+}

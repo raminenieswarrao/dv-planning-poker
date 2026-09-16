@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Refinement Poker</title>
+
+    <link rel="stylesheet"
+          href="/css/auth-nav.css">
+
+    <link rel="stylesheet"
+          href="/css/dashboard.css">
+</head>
+
+<body>
+
+<header class="header">
+
+    <a href="/dashboard.html"
+       class="header-left dashboard-brand">
+
+        <div class="dv-logo-card">
+            DV
+        </div>
+
+        <span>
+            Refinement Poker
+        </span>
+
+    </a>
+
+
+    <div class="header-clock">
+
+        <div id="currentDate"
+             class="header-date">
+        </div>
+
+        <div class="header-time-row">
+
+            <span id="currentTime"
+                  class="header-live-time">
+            </span>
+
+            <span id="currentTimezone"
+                  class="header-timezone">
+            </span>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main id="dashboardContent"
+      class="dashboard-page dashboard-hidden">
+
+    <!-- WELCOME -->
+
+    <section class="welcome-section">
+
+        <div>
+
+            <div class="welcome-label">
+                Dashboard
+            </div>
+
+            <h1 id="welcomeTitle">
+                Welcome back
+            </h1>
+
+            <p>
+                Plan team activities, manage tournaments,
+                and jump into Refinement Poker.
+            </p>
+
+        </div>
+
+        <div id="roleBadge"
+             class="dashboard-role">
+            USER
+        </div>
+
+    </section>
+
+
+    <!-- MAIN CARDS -->
+
+    <section class="dashboard-grid">
+
+        <!-- PLANNING POKER -->
+
+        <article class="dashboard-card featured-card">
+
+            <div class="card-icon poker-icon">
+                ♠
+            </div>
+
+            <div class="card-content">
+
+                <h2>
+                    Planning Poker
+                </h2>
+
+                <p>
+                    Create or join a room and estimate stories
+                    with your team.
+                </p>
+
+            </div>
+
+            <a href="/"
+               class="card-button primary-card-button">
+
+                Open Planning Poker
+
+            </a>
+
+        </article>
+
+
+        <!-- TOURNAMENTS -->
+
+        <article class="dashboard-card">
+
+            <div class="card-icon">
+                🏆
+            </div>
+
+            <div class="card-content">
+
+                <h2>
+                    Tournaments
+                </h2>
+
+                <p>
+                    Create and manage Pickleball tournaments,
+                    participants and scores.
+                </p>
+
+            </div>
+
+            <a href="/tournaments.html"
+               class="card-button primary-card-button">
+
+                View Tournaments
+
+            </a>
+
+        </article>
+
+
+        <!-- RECENT TOURNAMENT -->
+
+        <article id="recentTournamentCard"
+                 class="dashboard-card recent-tournament-card">
+
+            <div class="card-icon recent-tournament-icon">
+                🥇
+            </div>
+
+            <div class="card-content">
+
+                <h2>
+                    Recent Tournament
+                </h2>
+
+                <div id="recentTournamentContent"
+                     class="recent-tournament-content"
+                     aria-live="polite">
+
+                    <div class="recent-result-loading">
+
+                        <span class="recent-loading-dot">
+                        </span>
+
+                        <span>
+                            Loading latest result...
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <a id="recentTournamentLink"
+               href="/tournaments.html"
+               class="card-button secondary-card-button dashboard-hidden">
+
+                View Tournament
+
+            </a>
+
+        </article>
+
+
+        <!-- PROFILE -->
+
+        <article class="dashboard-card">
+
+            <div id="profileInitials"
+                 class="profile-avatar">
+
+                --
+
+            </div>
+
+            <div class="card-content">
+
+                <h2 id="profileName">
+                    Profile
+                </h2>
+
+                <p id="profileEmail">
+                </p>
+
+                <span id="profileRole"
+                      class="profile-role-badge">
+
+                    USER
+
+                </span>
+
+            </div>
+
+            <button class="card-button secondary-card-button"
+                    type="button"
+                    disabled>
+
+                Profile Coming Soon
+
+            </button>
+
+        </article>
+
+    </section>
+
+
+    <!-- ADMIN AREA -->
+
+    <section id="adminSection"
+             class="admin-section dashboard-hidden">
+
+        <div class="section-heading">
+
+            <div>
+
+                <div class="welcome-label">
+                    Administration
+                </div>
+
+                <h2>
+                    Tournament Management
+                </h2>
+
+            </div>
+
+            <span class="admin-badge">
+                ADMIN
+            </span>
+
+        </div>
+
+
+        <div class="admin-actions">
+
+            <button type="button"
+                    disabled>
+
+                + Create Tournament
+
+            </button>
+
+            <button type="button"
+                    disabled>
+
+                Manage Scores
+
+            </button>
+
+        </div>
+
+
+        <p>
+            Tournament administration will be enabled in the
+            next development phase.
+        </p>
+
+    </section>
+
+</main>
+
+
+<div id="dashboardLoading"
+     class="dashboard-loading">
+
+    <div class="loading-logo">
+        DV
+    </div>
+
+    <div>
+        Loading your dashboard...
+    </div>
+
+</div>
+
+
+<footer class="footer-credit">
+    Designed and developed by Eswar Ramineni
+</footer>
+
+
+<script src="/js/auth-nav.js"
+        defer>
+</script>
+
+<script src="/js/dashboard.js"
+        defer>
+</script>
+
+</body>
+
+</html>

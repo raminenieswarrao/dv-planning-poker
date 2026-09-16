@@ -1,0 +1,726 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+    background:
+            linear-gradient(
+                    180deg,
+                    #f7f9fc 0%,
+                    #eef3f9 100%
+            );
+
+    color: #172033;
+}
+
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.auth-header {
+    min-height: 70px;
+
+    padding: 10px 7%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    background: #ffffff;
+
+    border-bottom:
+            1px solid #e3e8ef;
+
+    box-shadow:
+            0 1px 4px
+            rgba(16, 24, 40, 0.03);
+}
+
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #172033;
+
+    text-decoration: none;
+}
+
+
+.brand-logo {
+    width: 42px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background:
+            linear-gradient(
+                    145deg,
+                    #1473e6,
+                    #075bbf
+            );
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    letter-spacing: 0.6px;
+
+    box-shadow:
+            0 3px 8px
+            rgba(20, 115, 230, 0.22);
+}
+
+
+.brand-name {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+.header-link {
+    padding: 10px 14px;
+
+    color: #344054;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    border-radius: 8px;
+}
+
+
+.header-link:hover {
+    background: #f2f4f7;
+}
+
+
+.signup-header-button {
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    background: #1473e6;
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    box-shadow:
+            0 2px 5px
+            rgba(20, 115, 230, 0.18);
+}
+
+
+.signup-header-button:hover {
+    background: #0d67d1;
+}
+
+
+/* =====================================================
+   PAGE
+   ===================================================== */
+
+.auth-page {
+    min-height:
+            calc(100vh - 110px);
+
+    padding: 55px 20px 70px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+
+/* =====================================================
+   CARD
+   ===================================================== */
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+
+    padding: 34px;
+
+    border:
+            1px solid #e4e9f0;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    box-shadow:
+            0 12px 35px
+            rgba(16, 24, 40, 0.08);
+}
+
+
+.auth-card-header {
+    margin-bottom: 28px;
+
+    text-align: center;
+}
+
+
+.auth-icon {
+    width: 46px;
+    height: 52px;
+
+    margin: 0 auto 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+            linear-gradient(
+                    145deg,
+                    #1473e6,
+                    #075bbf
+            );
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    letter-spacing: 0.7px;
+
+    box-shadow:
+            0 4px 10px
+            rgba(20, 115, 230, 0.22);
+}
+
+
+.auth-card-header h1 {
+    margin:
+            0 0 10px;
+
+    font-size: 29px;
+}
+
+
+.auth-card-header p {
+    margin: 0;
+
+    color: #667085;
+
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+
+/* =====================================================
+   FORM
+   ===================================================== */
+
+.form-group {
+    margin-bottom: 19px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #344054;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.form-group input {
+    width: 100%;
+
+    height: 48px;
+
+    padding: 0 14px;
+
+    border:
+            1px solid #cfd6df;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #172033;
+
+    font-size: 15px;
+
+    transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease;
+}
+
+
+.form-group input:focus {
+    outline: none;
+
+    border-color: #1473e6;
+
+    box-shadow:
+            0 0 0 3px
+            rgba(20, 115, 230, 0.09);
+}
+
+
+.form-group input::placeholder {
+    color: #98a2b3;
+}
+
+
+/* =====================================================
+   PASSWORD
+   ===================================================== */
+
+.password-wrapper {
+    position: relative;
+}
+
+
+.password-wrapper input {
+    padding-right: 72px;
+}
+
+
+.password-toggle {
+    position: absolute;
+
+    right: 9px;
+    top: 50%;
+
+    transform:
+            translateY(-50%);
+
+    padding: 6px 8px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: #1473e6;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.password-toggle:hover {
+    background: #eef6ff;
+}
+
+
+/* =====================================================
+   MESSAGES
+   ===================================================== */
+
+.form-message {
+    display: none;
+
+    margin:
+            4px 0 16px;
+
+    padding: 10px 12px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+
+.form-message.error {
+    display: block;
+
+    border:
+            1px solid #fecaca;
+
+    background: #fef2f2;
+
+    color: #b42318;
+}
+
+
+.form-message.success {
+    display: block;
+
+    border:
+            1px solid #abefc6;
+
+    background: #ecfdf3;
+
+    color: #067647;
+}
+
+
+/* =====================================================
+   BUTTONS
+   ===================================================== */
+
+.primary-button,
+.secondary-button {
+    width: 100%;
+
+    min-height: 47px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+            transform 0.12s ease,
+            background 0.12s ease,
+            opacity 0.12s ease;
+}
+
+
+.primary-button {
+    border: none;
+
+    background: #1473e6;
+    color: #ffffff;
+
+    cursor: pointer;
+}
+
+
+.primary-button:hover:not(:disabled) {
+    background: #0d67d1;
+
+    transform:
+            translateY(-1px);
+}
+
+
+.primary-button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.6;
+}
+
+
+.secondary-button {
+    border:
+            1px solid #cfd6df;
+
+    background: #ffffff;
+
+    color: #172033;
+}
+
+
+.secondary-button:hover {
+    background: #f8fafc;
+}
+
+
+/* =====================================================
+   DIVIDER
+   ===================================================== */
+
+.auth-divider {
+    position: relative;
+
+    margin: 24px 0;
+
+    text-align: center;
+}
+
+
+.auth-divider::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 50%;
+
+    height: 1px;
+
+    background: #e4e7ec;
+}
+
+
+.auth-divider span {
+    position: relative;
+
+    padding: 0 12px;
+
+    background: #ffffff;
+
+    color: #98a2b3;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   CONTINUE LINK
+   ===================================================== */
+
+.continue-link {
+    display: block;
+
+    margin-top: 21px;
+
+    color: #667085;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    font-size: 12px;
+}
+
+
+.continue-link:hover {
+    color: #1473e6;
+
+    text-decoration: underline;
+}
+
+
+/* =====================================================
+   FOOTER
+   ===================================================== */
+
+.auth-footer {
+    padding: 8px 20px 12px;
+
+    color: #98a2b3;
+
+    text-align: center;
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 650px) {
+
+    .auth-header {
+        min-height: 60px;
+
+        padding:
+                8px 14px;
+    }
+
+
+    .brand {
+        gap: 8px;
+    }
+
+
+    .brand-logo {
+        width: 32px;
+        height: 39px;
+
+        border-radius: 7px;
+
+        font-size: 10px;
+    }
+
+
+    .brand-name {
+        font-size: 16px;
+    }
+
+
+    .header-actions {
+        gap: 5px;
+    }
+
+
+    .header-link {
+        padding:
+                8px 7px;
+
+        font-size: 11px;
+    }
+
+
+    .signup-header-button {
+        padding:
+                8px 10px;
+
+        font-size: 11px;
+    }
+
+
+    .auth-page {
+        min-height:
+                calc(100vh - 95px);
+
+        padding:
+                28px 12px 60px;
+    }
+
+
+    .auth-card {
+        max-width: 100%;
+
+        padding:
+                25px 19px;
+
+        border-radius: 15px;
+    }
+
+
+    .auth-card-header {
+        margin-bottom: 23px;
+    }
+
+
+    .auth-icon {
+        width: 40px;
+        height: 45px;
+
+        margin-bottom: 13px;
+    }
+
+
+    .auth-card-header h1 {
+        font-size: 24px;
+    }
+
+
+    .auth-card-header p {
+        font-size: 12px;
+    }
+
+
+    .form-group input {
+        height: 46px;
+
+        font-size: 14px;
+    }
+
+
+    .primary-button,
+    .secondary-button {
+        min-height: 45px;
+
+        font-size: 13px;
+    }
+
+}
+
+
+@media (max-width: 390px) {
+
+    .brand-name {
+        font-size: 14px;
+    }
+
+
+    .header-link {
+        display: none;
+    }
+
+
+    .signup-header-button {
+        padding:
+                8px 9px;
+
+        font-size: 10px;
+    }
+
+}
+
+/* =====================================================
+   SELECT / DROPDOWN
+   ===================================================== */
+
+.form-group select {
+    width: 100%;
+
+    height: 48px;
+
+    padding: 0 14px;
+
+    border: 1px solid #cfd6df;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #172033;
+
+    font-family: inherit;
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.form-group select:focus {
+    outline: none;
+
+    border-color: #1473e6;
+
+    box-shadow:
+            0 0 0 3px
+            rgba(20, 115, 230, 0.09);
+}
+
+.form-group select:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+@media (max-width: 650px) {
+
+    .form-group select {
+        height: 46px;
+        font-size: 14px;
+    }
+}
