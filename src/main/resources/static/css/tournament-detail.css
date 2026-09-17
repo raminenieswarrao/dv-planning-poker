@@ -472,11 +472,15 @@
     width: 38px;
     height: 38px;
 
-    flex: 0 0 auto;
+    position: relative;
+
+    flex: 0 0 38px;
 
     display: flex;
     align-items: center;
     justify-content: center;
+
+    overflow: hidden;
 
     border-radius: 50%;
 
@@ -486,6 +490,47 @@
 
     font-size: 10px;
     font-weight: 800;
+}
+
+
+.participant-avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: absolute;
+    inset: 0;
+}
+
+
+.participant-avatar-initials.hidden {
+    display: none;
+}
+
+
+.participant-avatar-image {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+
+    border-radius: 50%;
+
+    background: #e8edf3;
+
+    object-fit: cover;
+
+    transition: opacity 150ms ease;
+}
+
+
+.participant-avatar-image.loaded {
+    opacity: 1;
 }
 
 

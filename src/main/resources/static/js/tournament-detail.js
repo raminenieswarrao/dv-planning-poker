@@ -741,18 +741,9 @@ function renderParticipants() {
 
 
             const avatar =
-                document.createElement(
-                    "div"
-                );
-
-
-            avatar.className =
-                "participant-avatar";
-
-
-            avatar.textContent =
-                getInitials(
-                    participant.name
+                createUserAvatar(
+                    participant.name,
+                    participant.avatarUrl
                 );
 
 
@@ -1218,18 +1209,9 @@ function renderSearchResults(
 
 
             const avatar =
-                document.createElement(
-                    "div"
-                );
-
-
-            avatar.className =
-                "participant-avatar";
-
-
-            avatar.textContent =
-                getInitials(
-                    user.name
+                createUserAvatar(
+                    user.name,
+                    user.avatarUrl
                 );
 
 
@@ -5535,6 +5517,155 @@ function formatDisplayName(
         .join(
             " "
         );
+}
+
+
+/* =====================================================
+   USER AVATAR
+   ===================================================== */
+
+function createUserAvatar(
+    name,
+    avatarUrl
+) {
+
+    const avatar =
+        document.createElement(
+            "div"
+        );
+
+
+    avatar.className =
+        "participant-avatar";
+
+
+    const initials =
+        document.createElement(
+            "span"
+        );
+
+
+    initials.className =
+        "participant-avatar-initials";
+
+
+    initials.textContent =
+        getInitials(
+            name
+        );
+
+
+    avatar.appendChild(
+        initials
+    );
+
+
+    const safeUrl =
+        safeUserAvatarUrl(
+            avatarUrl
+        );
+
+
+    if (!safeUrl) {
+
+        return avatar;
+    }
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.className =
+        "participant-avatar-image";
+
+
+    image.alt =
+        "";
+
+
+    image.loading =
+        "lazy";
+
+
+    image.addEventListener(
+        "load",
+        function () {
+
+            initials.classList.add(
+                "hidden"
+            );
+
+
+            image.classList.add(
+                "loaded"
+            );
+        }
+    );
+
+
+    image.addEventListener(
+        "error",
+        function () {
+
+            image.remove();
+
+
+            initials.classList.remove(
+                "hidden"
+            );
+        }
+    );
+
+
+    image.src =
+        safeUrl;
+
+
+    avatar.appendChild(
+        image
+    );
+
+
+    return avatar;
+}
+
+
+function safeUserAvatarUrl(
+    value
+) {
+
+    if (typeof value !== "string" ||
+            !value.trim()) {
+
+        return "";
+    }
+
+
+    try {
+
+        const url =
+            new URL(
+                value.trim(),
+                window.location.origin
+            );
+
+
+        if (url.protocol !== "http:" &&
+                url.protocol !== "https:") {
+
+            return "";
+        }
+
+
+        return url.href;
+
+    } catch (error) {
+
+        return "";
+    }
 }
 
 
