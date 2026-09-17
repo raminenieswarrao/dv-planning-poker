@@ -385,19 +385,51 @@ body {
    PROFILE
    ===================================================== */
 
-.profile-avatar {
+.dashboard-profile-avatar {
     width: 48px;
     height: 48px;
 
     margin-bottom: 19px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+
+    overflow: hidden;
 
     border-radius: 50%;
 
     background: #1473e6;
+
+    box-shadow:
+            0 3px 10px
+            rgba(16, 24, 40, 0.12);
+}
+
+
+.dashboard-profile-avatar-image,
+.dashboard-profile-avatar-initials {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: 50%;
+}
+
+
+.dashboard-profile-avatar-image {
+    display: block;
+
+    background: #e8edf3;
+
+    object-fit: cover;
+}
+
+
+.dashboard-profile-avatar-initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     color: white;
 

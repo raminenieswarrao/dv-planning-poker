@@ -7,6 +7,12 @@ document.addEventListener(
 );
 
 
+window.addEventListener(
+    "dv-profile-updated",
+    refreshNavigationAfterProfileUpdate
+);
+
+
 /* =====================================================
    INITIALIZE
    ===================================================== */
@@ -17,7 +23,6 @@ async function initializeAuthNavigation() {
         document.querySelector(
             ".header"
         );
-
 
     const clock =
         document.querySelector(
@@ -35,18 +40,88 @@ async function initializeAuthNavigation() {
     );
 
 
-    const nav =
-        document.createElement(
-            "div"
+    let nav =
+        document.getElementById(
+            "authNavigation"
         );
 
 
-    nav.id =
-        "authNavigation";
+    if (!nav) {
+
+        nav =
+            document.createElement(
+                "div"
+            );
+
+        nav.id =
+            "authNavigation";
+
+        nav.className =
+            "auth-nav";
 
 
-    nav.className =
-        "auth-nav";
+        if (clock &&
+                clock.parentNode === header) {
+
+            header.insertBefore(
+                nav,
+                clock
+            );
+
+        } else {
+
+            header.appendChild(
+                nav
+            );
+        }
+    }
+
+
+    showNavigationLoading(
+        nav
+    );
+
+
+    await refreshAuthNavigation(
+        nav
+    );
+}
+
+
+/* =====================================================
+   PROFILE UPDATE
+   ===================================================== */
+
+async function refreshNavigationAfterProfileUpdate() {
+
+    const nav =
+        document.getElementById(
+            "authNavigation"
+        );
+
+
+    if (!nav) {
+        return;
+    }
+
+
+    showNavigationLoading(
+        nav
+    );
+
+
+    await refreshAuthNavigation(
+        nav
+    );
+}
+
+
+function showNavigationLoading(
+    nav
+) {
+
+    nav.innerHTML =
+        "";
 
 
     const loading =
@@ -61,29 +136,6 @@ async function initializeAuthNavigation() {
 
     nav.appendChild(
         loading
-    );
-
-
-    if (
-        clock &&
-        clock.parentNode === header
-    ) {
-
-        header.insertBefore(
-            nav,
-            clock
-        );
-
-    } else {
-
-        header.appendChild(
-            nav
-        );
-    }
-
-
-    await refreshAuthNavigation(
-        nav
     );
 }
 
@@ -108,6 +160,9 @@ async function refreshAuthNavigation(
                     credentials:
                         "same-origin",
 
+                    cache:
+                        "no-store",
+
                     headers: {
                         "Accept":
                             "application/json"
@@ -130,11 +185,9 @@ async function refreshAuthNavigation(
             await response.json();
 
 
-        if (
-            data &&
-            data.authenticated === true &&
-            data.user
-        ) {
+        if (data &&
+                data.authenticated === true &&
+                data.user) {
 
             renderAuthenticatedNavigation(
                 nav,
@@ -151,10 +204,6 @@ async function refreshAuthNavigation(
 
     } catch (error) {
 
-        /*
-         * Planning Poker must remain available even if
-         * authentication/profile loading temporarily fails.
-         */
         renderGuestNavigation(
             nav
         );
@@ -175,49 +224,51 @@ function renderGuestNavigation(
 
 
     const login =
-        document.createElement(
-            "a"
+        createNavigationLink(
+            "Login",
+            "/login.html",
+            "auth-nav-link auth-login-link"
         );
-
-
-    login.href =
-        "/login.html";
-
-
-    login.className =
-        "auth-nav-link auth-login-link";
-
-
-    login.textContent =
-        "Login";
 
 
     const signup =
+        createNavigationLink(
+            "Sign Up",
+            "/signup.html",
+            "auth-nav-link auth-signup-link"
+        );
+
+
+    nav.append(
+        login,
+        signup
+    );
+}
+
+
+function createNavigationLink(
+    text,
+    href,
+    className
+) {
+
+    const link =
         document.createElement(
             "a"
         );
 
 
-    signup.href =
-        "/signup.html";
+    link.href =
+        href;
+
+    link.className =
+        className;
+
+    link.textContent =
+        text;
 
 
-    signup.className =
-        "auth-nav-link auth-signup-link";
-
-
-    signup.textContent =
-        "Sign Up";
-
-
-    nav.appendChild(
-        login
-    );
-
-
-    nav.appendChild(
-        signup
-    );
+    return link;
 }
 
 
@@ -236,28 +287,29 @@ function renderAuthenticatedNavigation(
 
 
     const email =
-        user &&
-        typeof user.email ===
-        "string"
-            ? user.email
-            : "";
+        stringValue(
+            user?.email
+        );
 
 
     const profileName =
-        profile &&
-        typeof profile.name ===
-        "string" &&
-        profile.name.trim()
-            ? profile.name.trim()
-            : "";
+        stringValue(
+            profile?.name
+        );
 
 
     const role =
-        profile &&
-        typeof profile.role ===
-        "string"
-            ? profile.role.trim().toUpperCase()
-            : "USER";
+        stringValue(
+            profile?.role
+        )
+            .toUpperCase() ||
+        "USER";
+
+
+    const avatarUrl =
+        safeAvatarUrl(
+            profile?.avatarUrl
+        );
 
 
     const displayName =
@@ -286,7 +338,6 @@ function renderAuthenticatedNavigation(
     button.type =
         "button";
 
-
     button.className =
         "auth-account-button";
 
@@ -303,20 +354,12 @@ function renderAuthenticatedNavigation(
     );
 
 
-    const avatar =
-        document.createElement(
-            "span"
-        );
-
-
-    avatar.className =
-        "auth-avatar";
-
-
-    avatar.textContent =
-        getInitials(
-            displayName
-        );
+    button.appendChild(
+        createAccountAvatar(
+            displayName,
+            avatarUrl
+        )
+    );
 
 
     const accountText =
@@ -327,7 +370,6 @@ function renderAuthenticatedNavigation(
 
     accountText.className =
         "auth-account-text";
-
 
     accountText.textContent =
         formatDisplayName(
@@ -344,22 +386,17 @@ function renderAuthenticatedNavigation(
     chevron.className =
         "auth-chevron";
 
-
     chevron.textContent =
         "▼";
 
-
-    button.appendChild(
-        avatar
+    chevron.setAttribute(
+        "aria-hidden",
+        "true"
     );
 
 
-    button.appendChild(
-        accountText
-    );
-
-
-    button.appendChild(
+    button.append(
+        accountText,
         chevron
     );
 
@@ -374,7 +411,7 @@ function renderAuthenticatedNavigation(
 
     button.addEventListener(
         "click",
-        function (event) {
+        event => {
 
             event.stopPropagation();
 
@@ -400,12 +437,8 @@ function renderAuthenticatedNavigation(
     );
 
 
-    wrapper.appendChild(
-        button
-    );
-
-
-    wrapper.appendChild(
+    wrapper.append(
+        button,
         menu
     );
 
@@ -417,13 +450,12 @@ function renderAuthenticatedNavigation(
 
     document.addEventListener(
         "click",
-        function (event) {
+        event => {
 
-            if (
-                !wrapper.contains(
-                    event.target
-                )
-            ) {
+            if (wrapper.isConnected &&
+                    !wrapper.contains(
+                        event.target
+                    )) {
 
                 closeAccountMenu(
                     menu,
@@ -436,12 +468,10 @@ function renderAuthenticatedNavigation(
 
     document.addEventListener(
         "keydown",
-        function (event) {
+        event => {
 
-            if (
-                event.key ===
-                "Escape"
-            ) {
+            if (wrapper.isConnected &&
+                    event.key === "Escape") {
 
                 closeAccountMenu(
                     menu,
@@ -450,6 +480,107 @@ function renderAuthenticatedNavigation(
             }
         }
     );
+}
+
+
+/* =====================================================
+   ACCOUNT AVATAR
+   ===================================================== */
+
+function createAccountAvatar(
+    displayName,
+    avatarUrl
+) {
+
+    const avatar =
+        document.createElement(
+            "span"
+        );
+
+
+    avatar.className =
+        "auth-avatar";
+
+
+    const initials =
+        document.createElement(
+            "span"
+        );
+
+
+    initials.className =
+        "auth-avatar-initials";
+
+
+    initials.textContent =
+        getInitials(
+            displayName
+        );
+
+
+    avatar.appendChild(
+        initials
+    );
+
+
+    if (!avatarUrl) {
+
+        return avatar;
+    }
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+
+    image.className =
+        "auth-avatar-image";
+
+
+    image.alt =
+        "";
+
+
+    image.src =
+        avatarUrl;
+
+
+    image.addEventListener(
+        "load",
+        () => {
+
+            initials.classList.add(
+                "hidden"
+            );
+
+            image.classList.add(
+                "loaded"
+            );
+        }
+    );
+
+
+    image.addEventListener(
+        "error",
+        () => {
+
+            image.remove();
+
+            initials.classList.remove(
+                "hidden"
+            );
+        }
+    );
+
+
+    avatar.appendChild(
+        image
+    );
+
+
+    return avatar;
 }
 
 
@@ -492,7 +623,6 @@ function buildAccountMenu(
     label.className =
         "auth-menu-label";
 
-
     label.textContent =
         "Signed in as";
 
@@ -505,7 +635,6 @@ function buildAccountMenu(
 
     nameElement.className =
         "auth-menu-name";
-
 
     nameElement.textContent =
         formatDisplayName(
@@ -522,10 +651,8 @@ function buildAccountMenu(
     roleElement.className =
         "auth-role-badge";
 
-
     roleElement.textContent =
-        role ===
-        "ADMIN"
+        role === "ADMIN"
             ? "ADMIN"
             : "USER";
 
@@ -539,35 +666,23 @@ function buildAccountMenu(
     emailElement.className =
         "auth-menu-email";
 
-
     emailElement.textContent =
         email ||
         "Authenticated user";
 
 
-    userInfo.appendChild(
-        label
-    );
-
-
-    userInfo.appendChild(
-        nameElement
-    );
-
-
-    userInfo.appendChild(
-        roleElement
-    );
-
-
-    userInfo.appendChild(
+    userInfo.append(
+        label,
+        nameElement,
+        roleElement,
         emailElement
     );
 
 
     const profile =
-        createDisabledMenuItem(
-            "Profile"
+        createMenuLink(
+            "Profile",
+            "/profile.html"
         );
 
 
@@ -592,10 +707,8 @@ function buildAccountMenu(
     logout.type =
         "button";
 
-
     logout.className =
         "auth-menu-item logout";
-
 
     logout.textContent =
         "Logout";
@@ -607,32 +720,41 @@ function buildAccountMenu(
     );
 
 
-    menu.appendChild(
-        userInfo
-    );
-
-
-    menu.appendChild(
-        profile
-    );
-
-
-    menu.appendChild(
-        tournaments
-    );
-
-
-    menu.appendChild(
-        password
-    );
-
-
-    menu.appendChild(
+    menu.append(
+        userInfo,
+        profile,
+        tournaments,
+        password,
         logout
     );
 
 
     return menu;
+}
+
+
+function createMenuLink(
+    text,
+    href
+) {
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.className =
+        "auth-menu-item";
+
+    link.href =
+        href;
+
+    link.textContent =
+        text;
+
+
+    return link;
 }
 
 
@@ -648,7 +770,6 @@ function createDisabledMenuItem(
 
     item.className =
         "auth-menu-item disabled";
-
 
     item.textContent =
         text;
@@ -702,8 +823,7 @@ async function logoutCurrentUser() {
     } catch (error) {
 
         /*
-         * Refreshing the page still allows us to recover
-         * if the request itself failed.
+         * Redirect regardless so the application can recover.
          */
     }
 
@@ -715,44 +835,88 @@ async function logoutCurrentUser() {
 
 
 /* =====================================================
-   NAME HELPERS
+   HELPERS
    ===================================================== */
+
+function safeAvatarUrl(
+    value
+) {
+
+    const normalized =
+        stringValue(
+            value
+        );
+
+
+    if (!normalized) {
+        return "";
+    }
+
+
+    try {
+
+        const url =
+            new URL(
+                normalized,
+                window.location.origin
+            );
+
+
+        if (url.protocol !== "http:" &&
+                url.protocol !== "https:") {
+
+            return "";
+        }
+
+
+        return url.href;
+
+    } catch (error) {
+
+        return "";
+    }
+}
+
+
+function stringValue(
+    value
+) {
+
+    return typeof value === "string"
+        ? value.trim()
+        : "";
+}
+
 
 function formatDisplayName(
     value
 ) {
 
-    if (
-        typeof value !==
-        "string" ||
-        !value.trim()
-    ) {
+    const normalized =
+        stringValue(
+            value
+        );
 
+
+    if (!normalized) {
         return "Account";
     }
 
 
-    /*
-     * Profiles may currently contain uppercase names.
-     *
-     * ESWAR RAO RAMINENI
-     *
-     * becomes:
-     *
-     * Eswar Rao Ramineni
-     */
-    return value
-        .trim()
+    return normalized
         .toLowerCase()
         .split(
             /\s+/
         )
         .map(
             part =>
-                part.charAt(0)
-                    .toUpperCase()
+                part.charAt(
+                    0
+                ).toUpperCase()
                 +
-                part.slice(1)
+                part.slice(
+                    1
+                )
         )
         .join(
             " "
@@ -764,27 +928,14 @@ function createDisplayNameFromEmail(
     email
 ) {
 
-    if (
-        typeof email !==
-        "string"
-    ) {
-
-        return "Account";
-    }
-
-
     const localPart =
-        email
+        stringValue(
+            email
+        )
             .split(
                 "@"
             )[0]
             .trim();
-
-
-    if (!localPart) {
-
-        return "Account";
-    }
 
 
     const cleaned =
@@ -796,13 +947,8 @@ function createDisplayNameFromEmail(
             .trim();
 
 
-    if (!cleaned) {
-
-        return "Account";
-    }
-
-
-    return cleaned;
+    return cleaned ||
+        "Account";
 }
 
 
@@ -810,28 +956,24 @@ function getInitials(
     value
 ) {
 
-    if (
-        typeof value !==
-        "string" ||
-        !value.trim()
-    ) {
+    const normalized =
+        stringValue(
+            value
+        );
 
+
+    if (!normalized) {
         return "DV";
     }
 
 
     const parts =
-        value
-            .trim()
-            .split(
-                /\s+/
-            );
+        normalized.split(
+            /\s+/
+        );
 
 
-    if (
-        parts.length ===
-        1
-    ) {
+    if (parts.length === 1) {
 
         return parts[0]
             .substring(
@@ -845,9 +987,6 @@ function getInitials(
     return (
         parts[0][0]
         +
-        parts[
-            parts.length - 1
-        ][0]
-    )
-        .toUpperCase();
+        parts[parts.length - 1][0]
+    ).toUpperCase();
 }

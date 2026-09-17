@@ -166,14 +166,10 @@ function renderDashboard(
         role;
 
 
-    document
-        .getElementById(
-            "profileInitials"
-        )
-        .textContent =
-        getInitials(
-            name
-        );
+    renderDashboardAvatar(
+        profile.avatarUrl,
+        name
+    );
 
 
     if (
@@ -210,6 +206,145 @@ function renderDashboard(
         );
 }
 
+/* =====================================================
+   PROFILE AVATAR
+   ===================================================== */
+
+function renderDashboardAvatar(
+    avatarUrl,
+    name
+) {
+
+    const image =
+        document.getElementById(
+            "dashboardProfileAvatarImage"
+        );
+
+
+    const initials =
+        document.getElementById(
+            "profileInitials"
+        );
+
+
+    if (!image ||
+            !initials) {
+
+        return;
+    }
+
+
+    initials.textContent =
+        getInitials(
+            name
+        );
+
+
+    const safeUrl =
+        safeDashboardAvatarUrl(
+            avatarUrl
+        );
+
+
+    if (!safeUrl) {
+
+        image.classList.add(
+            "dashboard-hidden"
+        );
+
+
+        image.removeAttribute(
+            "src"
+        );
+
+
+        initials.classList.remove(
+            "dashboard-hidden"
+        );
+
+
+        return;
+    }
+
+
+    image.onload =
+        () => {
+
+            image.classList.remove(
+                "dashboard-hidden"
+            );
+
+
+            initials.classList.add(
+                "dashboard-hidden"
+            );
+        };
+
+
+    image.onerror =
+        () => {
+
+            image.classList.add(
+                "dashboard-hidden"
+            );
+
+
+            image.removeAttribute(
+                "src"
+            );
+
+
+            initials.classList.remove(
+                "dashboard-hidden"
+            );
+        };
+
+
+    image.alt =
+        name
+            ? `${formatDisplayName(name)}'s profile picture`
+            : "Profile picture";
+
+
+    image.src =
+        safeUrl;
+}
+
+
+function safeDashboardAvatarUrl(
+    value
+) {
+
+    if (typeof value !== "string" ||
+            !value.trim()) {
+
+        return "";
+    }
+
+
+    try {
+
+        const url =
+            new URL(
+                value.trim(),
+                window.location.origin
+            );
+
+
+        if (url.protocol !== "http:" &&
+                url.protocol !== "https:") {
+
+            return "";
+        }
+
+
+        return url.href;
+
+    } catch (error) {
+
+        return "";
+    }
+}
 
 /* =====================================================
    RECENT TOURNAMENT

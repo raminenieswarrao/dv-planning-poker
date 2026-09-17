@@ -204,12 +204,22 @@
 
         <article class="dashboard-card">
 
-            <div id="profileInitials"
-                 class="profile-avatar">
+            <div class="dashboard-profile-avatar">
 
-                --
+                <img id="dashboardProfileAvatarImage"
+                     class="dashboard-profile-avatar-image dashboard-hidden"
+                     src=""
+                     alt="Profile picture">
+
+                <div id="profileInitials"
+                     class="dashboard-profile-avatar-initials">
+
+                    --
+
+                </div>
 
             </div>
+
 
             <div class="card-content">
 
@@ -223,19 +233,19 @@
                 <span id="profileRole"
                       class="profile-role-badge">
 
-                    USER
+            USER
 
-                </span>
+        </span>
 
             </div>
 
-            <button class="card-button secondary-card-button"
-                    type="button"
-                    disabled>
 
-                Profile Coming Soon
+            <a href="/profile.html"
+               class="card-button secondary-card-button">
 
-            </button>
+                View Profile
+
+            </a>
 
         </article>
 
