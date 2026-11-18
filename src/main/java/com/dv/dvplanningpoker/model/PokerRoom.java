@@ -63,6 +63,8 @@ public final class PokerRoom {
      */
     private String hostSessionId;
 
+    private long hostDisconnectDeadlineEpochMs;
+
     /**
      * Current room activity.
      *
@@ -178,21 +180,25 @@ public final class PokerRoom {
      * This should only be called after server-side authorization
      * inside PokerRoomService.
      */
-    public void setHostSessionId(
-            String hostSessionId) {
+    public void resumeHost(String sessionId) {
+        rebindParticipant(hostSessionId, sessionId);
+        hostSessionId = sessionId;
+        hostDisconnectDeadlineEpochMs = 0;
+    }
 
-        if (hostSessionId == null ||
-                hostSessionId.isBlank()) {
-
-            throw new IllegalArgumentException(
-                    "Host session is required."
-            );
-        }
-
-        this.hostSessionId =
-                hostSessionId;
-
+    public void rebindParticipant(String previousSessionId, String sessionId) {
+        Participant participant = participants.remove(previousSessionId);
+        participant.rebindSession(sessionId);
+        participants.put(sessionId, participant);
         touch();
+    }
+
+    public long getHostDisconnectDeadlineEpochMs() {
+        return hostDisconnectDeadlineEpochMs;
+    }
+
+    public void setHostDisconnectDeadlineEpochMs(long deadlineEpochMs) {
+        hostDisconnectDeadlineEpochMs = deadlineEpochMs;
     }
 
     /**

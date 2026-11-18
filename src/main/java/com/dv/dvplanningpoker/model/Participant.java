@@ -1,5 +1,6 @@
 package com.dv.dvplanningpoker.model;
 
+import java.security.MessageDigest;
 import java.util.UUID;
 
 /**
@@ -23,7 +24,9 @@ public class Participant {
      * SECURITY:
      * Never expose this value to the frontend.
      */
-    private final String sessionId;
+    private String sessionId;
+    private final byte[] reconnectTokenHash;
+    private long reconnectDeadlineEpochMs;
 
     /**
      * Public identifier for this participant.
@@ -61,7 +64,8 @@ public class Participant {
     public Participant(
             String sessionId,
             String name,
-            boolean host) {
+            boolean host,
+            byte[] reconnectTokenHash) {
 
         if (sessionId == null ||
                 sessionId.isBlank()) {
@@ -97,6 +101,7 @@ public class Participant {
 
         this.host =
                 host;
+        this.reconnectTokenHash = reconnectTokenHash == null ? null : reconnectTokenHash.clone();
     }
 
     /**
@@ -107,6 +112,23 @@ public class Participant {
     public String getSessionId() {
 
         return sessionId;
+    }
+
+    void rebindSession(String sessionId) {
+        this.sessionId = sessionId;
+        reconnectDeadlineEpochMs = 0;
+    }
+
+    public boolean matchesReconnectToken(byte[] tokenHash) {
+        return reconnectTokenHash != null && MessageDigest.isEqual(reconnectTokenHash, tokenHash);
+    }
+
+    public void setReconnectDeadlineEpochMs(long deadlineEpochMs) {
+        reconnectDeadlineEpochMs = deadlineEpochMs;
+    }
+
+    public boolean reconnectExpired(long now) {
+        return reconnectDeadlineEpochMs != 0 && now >= reconnectDeadlineEpochMs;
     }
 
     /**

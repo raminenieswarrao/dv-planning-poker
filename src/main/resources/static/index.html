@@ -400,6 +400,14 @@
             font-size: 27px;
         }
 
+        .host-disconnect-notice {
+            padding: 12px 16px;
+            border: 1px solid #d89e3b;
+            border-radius: 8px;
+            background: #fff3d6;
+            color: #663e00;
+        }
+
         .room-subtitle {
             margin: 0;
 
@@ -1685,6 +1693,11 @@
     <div id="roomScreen"
          class="panel">
 
+        <p id="hostDisconnectNotice" class="host-disconnect-notice" role="status" hidden>
+            <span id="hostDisconnectMessage"></span>
+            <span id="hostDisconnectCountdown" aria-hidden="true"></span>
+        </p>
+
         <div class="room-header">
 
             <div>
@@ -2271,6 +2284,67 @@
     let socketReady =
         false;
 
+    const roomConnectionReplacedCode = 4001;
+    const roomResumeStorageKey = "dvPlanningPoker.hostResume";
+    let roomResume = null;
+    let resumingRoom = false;
+    let joinAfterResumeFailure = null;
+    let hostDisconnectTimer = null;
+
+    try {
+        roomResume = JSON.parse(sessionStorage.getItem(roomResumeStorageKey));
+    } catch {
+        // Reconnecting within this page still works if browser storage is unavailable.
+    }
+
+    function savedRoomKey(roomCode, name) {
+        return "dvPlanningPoker.room:" + roomCode.replaceAll("-", "") + ":" + name.normalize("NFKC").toUpperCase();
+    }
+
+    function findSavedRoom(roomCode, name) {
+        try {
+            return JSON.parse(localStorage.getItem(savedRoomKey(roomCode, name)));
+        } catch {
+            return null;
+        }
+    }
+
+    function saveRoomResume(credentials, { keepBrowserCopy = false } = {}) {
+        const previous = roomResume;
+        roomResume = credentials;
+        try {
+            if (credentials?.name) {
+                localStorage.setItem(savedRoomKey(credentials.roomCode, credentials.name), JSON.stringify(credentials));
+            } else if (!credentials && previous?.name && !keepBrowserCopy) {
+                const saved = findSavedRoom(previous.roomCode, previous.name);
+                if (saved && saved.hostToken === previous.hostToken && saved.reconnectToken === previous.reconnectToken) {
+                    localStorage.removeItem(savedRoomKey(previous.roomCode, previous.name));
+                }
+            }
+        } catch {
+            // Same-tab recovery can still use session storage.
+        }
+
+        try {
+            if (credentials) {
+                sessionStorage.setItem(roomResumeStorageKey, JSON.stringify(credentials));
+            } else {
+                sessionStorage.removeItem(roomResumeStorageKey);
+            }
+        } catch {
+            // Keep the credentials in memory for this page.
+        }
+    }
+
+    function requestRoomResume() {
+        const { roomCode, hostToken, reconnectToken } = roomResume;
+        resumingRoom = true;
+        roomRequestPending = true;
+        socket.send(JSON.stringify(hostToken
+            ? { action: "RESUME_HOST", roomCode, hostToken }
+            : { action: "RESUME_PARTICIPANT", roomCode, reconnectToken }));
+    }
+
     let roomRequestPending =
         false;
 
@@ -2737,9 +2811,12 @@
                 socketReady =
                     true;
 
-
-                roomRequestPending =
-                    false;
+                resumingRoom = false;
+                roomRequestPending = false;
+                if (roomResume) {
+                    requestRoomResume();
+                    showJoinError("Reconnecting to your room...");
+                }
 
 
                 updateEntryButtons();
@@ -2811,6 +2888,17 @@
                     "ERROR"
                 ) {
 
+                    if (resumingRoom) {
+                        resumingRoom = false;
+                        saveRoomResume(null);
+                        if (joinAfterResumeFailure) {
+                            const { name, roomCode } = joinAfterResumeFailure;
+                            joinAfterResumeFailure = null;
+                            socket.send(JSON.stringify({ action: "JOIN_ROOM", name, roomCode }));
+                            return;
+                        }
+                    }
+
                     roomRequestPending =
                         false;
 
@@ -2837,6 +2925,9 @@
                     data.type ===
                     "ROOM_CREATED"
                 ) {
+                    if (typeof data.roomCode === "string" && typeof data.hostToken === "string") {
+                        saveRoomResume({ roomCode: data.roomCode, name: pendingName, hostToken: data.hostToken });
+                    }
 
                     if (
                         typeof data.roomCode ===
@@ -2856,6 +2947,9 @@
                     data.type ===
                     "ROOM_JOINED"
                 ) {
+                    if (typeof data.roomCode === "string" && typeof data.reconnectToken === "string") {
+                        saveRoomResume({ roomCode: data.roomCode, name: pendingName, reconnectToken: data.reconnectToken });
+                    }
 
                     if (
                         typeof data.roomCode ===
@@ -2876,6 +2970,7 @@
                     "REMOVED_FROM_ROOM"
                 ) {
 
+                    saveRoomResume(null);
                     removedFromRoom =
                         true;
 
@@ -2931,8 +3026,12 @@
                             true;
 
 
-                        joinedName =
-                            pendingName;
+                        joinedName = resumingRoom ? data.yourName : pendingName;
+                        if (resumingRoom && roomResume && joinedName) {
+                            saveRoomResume({ ...roomResume, name: joinedName });
+                        }
+                        joinAfterResumeFailure = null;
+                        clearJoinError();
 
 
                         roomRequestPending =
@@ -2964,15 +3063,14 @@
                         currentRoomCode;
 
 
-                    renderState(
-                        data
-                    );
+                    renderState(data);
+                    resumingRoom = false;
                 }
             };
 
 
         socket.onclose =
-            function () {
+            function (event) {
 
                 socketReady =
                     false;
@@ -2989,6 +3087,15 @@
                  * If this connection was intentionally removed
                  * by the host, preserve the removal message.
                  */
+                if (event.code === roomConnectionReplacedCode) {
+                    resumingRoom = false;
+                    saveRoomResume(null, { keepBrowserCopy: true });
+                    joinAfterResumeFailure = null;
+                    returnToEntryScreen("This room was opened in another connection.", false);
+                    setTimeout(reconnectIfNeeded, 1000);
+                    return;
+                }
+
                 if (removedFromRoom) {
 
                     removedFromRoom =
@@ -3008,7 +3115,9 @@
                 if (joined) {
 
                     returnToEntryScreen(
-                        "Connection was lost. Reconnect and join the room again.",
+                        roomResume
+                            ? "Connection was lost. Reconnecting to your room..."
+                            : "Connection was lost. Reconnect and join the room again.",
                         true
                     );
 
@@ -3174,13 +3283,15 @@
         updateEntryButtons();
 
 
-        socket.send(
-            JSON.stringify({
-                action: "JOIN_ROOM",
-                name: name,
-                roomCode: roomCode
-            })
-        );
+        const saved = findSavedRoom(roomCode, name);
+        if (saved?.hostToken || saved?.reconnectToken) {
+            joinAfterResumeFailure = { name, roomCode };
+            saveRoomResume(saved);
+            requestRoomResume();
+            return;
+        }
+
+        socket.send(JSON.stringify({ action: "JOIN_ROOM", name, roomCode }));
     }
 
 
@@ -3819,6 +3930,11 @@
                 null;
         }
 
+
+        if (resumingRoom) {
+            localSelection = data.yourSelection ?? null;
+        }
+        renderHostDisconnectNotice(data.hostDisconnectRemainingMs);
 
         const participants =
             Array.isArray(
@@ -5217,9 +5333,42 @@
        ROOM CLOSED / REMOVED / CONNECTION RESET
        ===================================================== */
 
+    function renderHostDisconnectNotice(remainingMs) {
+        const notice = document.getElementById("hostDisconnectNotice");
+        const message = document.getElementById("hostDisconnectMessage");
+        const countdown = document.getElementById("hostDisconnectCountdown");
+        clearInterval(hostDisconnectTimer);
+        hostDisconnectTimer = null;
+
+        if (!(remainingMs > 0)) {
+            notice.hidden = true;
+            message.textContent = "";
+            countdown.textContent = "";
+            return;
+        }
+
+        if (notice.hidden) {
+            notice.hidden = false;
+            message.textContent = "The host left. This room will close within one minute unless they return.";
+        }
+
+        const deadline = performance.now() + remainingMs;
+        const updateCountdown = () => {
+            const seconds = Math.max(0, Math.ceil((deadline - performance.now()) / 1000));
+            countdown.textContent = seconds > 0 ? seconds + "s remaining" : "Closing room...";
+            if (seconds === 0) {
+                clearInterval(hostDisconnectTimer);
+                hostDisconnectTimer = null;
+            }
+        };
+        hostDisconnectTimer = setInterval(updateCountdown, 250);
+        updateCountdown();
+    }
+
     function handleRoomClosed(
         message
     ) {
+        saveRoomResume(null);
 
         returnToEntryScreen(
             message,
@@ -5238,6 +5387,8 @@
         message,
         preserveRoomCode
     ) {
+
+        renderHostDisconnectNotice(0);
 
         const previousRoomCode =
             currentRoomCode;

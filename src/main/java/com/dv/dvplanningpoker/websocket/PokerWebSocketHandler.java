@@ -2,6 +2,7 @@ package com.dv.dvplanningpoker.websocket;
 
 import com.dv.dvplanningpoker.model.Participant;
 import com.dv.dvplanningpoker.service.PokerRoomService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -45,6 +46,9 @@ public class PokerWebSocketHandler
      * SECURITY LIMITS
      * =========================================================
      */
+
+    private static final CloseStatus ROOM_CONNECTION_REPLACED =
+            new CloseStatus(4001, "Room connection replaced");
 
     private static final int MAX_OPEN_CONNECTIONS =
             200;
@@ -289,14 +293,28 @@ public class PokerWebSocketHandler
                                     name
                             );
 
-                    sendRoomCreated(
-                            session,
-                            result.roomCode()
-                    );
+                    sendRoomCreated(session, result);
 
                     broadcastRoomState(
                             session.getId()
                     );
+                }
+
+                case "RESUME_HOST", "RESUME_PARTICIPANT" -> {
+                    if (!securityState.allowRoomEntryAttempt(now)) {
+                        sendError(session, "Too many room attempts. Please wait and try again.");
+                        return;
+                    }
+
+                    String roomCode = requiredText(json, "roomCode", MAX_ROOM_CODE_INPUT_LENGTH, false);
+                    boolean host = action.equals("RESUME_HOST");
+                    String token = requiredText(json, host ? "hostToken" : "reconnectToken",
+                            PokerRoomService.MAX_RECONNECT_TOKEN_INPUT_LENGTH, false);
+                    String previousSessionId = host
+                            ? pokerRoomService.resumeHost(session.getId(), roomCode, token)
+                            : pokerRoomService.resumeParticipant(session.getId(), roomCode, token);
+                    closeQuietly(sessions.get(previousSessionId), ROOM_CONNECTION_REPLACED);
+                    broadcastRoomState(session.getId());
                 }
 
                 /*
@@ -342,10 +360,7 @@ public class PokerWebSocketHandler
                                     name
                             );
 
-                    sendRoomJoined(
-                            session,
-                            result.roomCode()
-                    );
+                    sendRoomJoined(session, result);
 
                     broadcastRoomState(
                             session.getId()
@@ -785,15 +800,21 @@ public class PokerWebSocketHandler
                         timerEndEpochMs
                 );
 
+                response.put("yourName", currentUser.getName());
+                response.put("yourSelection", currentUser.getSelection());
+
                 response.put(
                         "participants",
                         participantData
                 );
 
-                sendJson(
-                        targetSession,
-                        response
-                );
+                synchronized (targetSession) {
+                    // Read the countdown when sending so overlapping broadcasts cannot restore an old notice.
+                    long deadline = pokerRoomService.getHostDisconnectDeadlineEpochMs(targetSessionId);
+                    response.put("hostDisconnectRemainingMs",
+                            deadline == 0 ? 0 : Math.max(1, deadline - System.currentTimeMillis()));
+                    sendJson(targetSession, response);
+                }
             }
 
         } catch (IllegalArgumentException |
@@ -840,50 +861,20 @@ public class PokerWebSocketHandler
      * =========================================================
      */
 
-    private void sendRoomCreated(
-            WebSocketSession session,
-            String roomCode) {
-
-        Map<String, Object> response =
-                new LinkedHashMap<>();
-
-        response.put(
-                "type",
-                "ROOM_CREATED"
-        );
-
-        response.put(
-                "roomCode",
-                roomCode
-        );
-
-        sendJson(
-                session,
-                response
-        );
+    private void sendRoomCreated(WebSocketSession session, PokerRoomService.CreateRoomResult result) {
+        sendJson(session, Map.of(
+                "type", "ROOM_CREATED",
+                "roomCode", result.roomCode(),
+                "hostToken", result.hostToken()
+        ));
     }
 
-    private void sendRoomJoined(
-            WebSocketSession session,
-            String roomCode) {
-
-        Map<String, Object> response =
-                new LinkedHashMap<>();
-
-        response.put(
-                "type",
-                "ROOM_JOINED"
-        );
-
-        response.put(
-                "roomCode",
-                roomCode
-        );
-
-        sendJson(
-                session,
-                response
-        );
+    private void sendRoomJoined(WebSocketSession session, PokerRoomService.JoinRoomResult result) {
+        sendJson(session, Map.of(
+                "type", "ROOM_JOINED",
+                "roomCode", result.roomCode(),
+                "reconnectToken", result.reconnectToken()
+        ));
     }
 
     /**
@@ -1121,52 +1112,19 @@ public class PokerWebSocketHandler
                 session.getId()
         );
 
-        PokerRoomService.LeaveResult leaveResult =
-                pokerRoomService.leave(
-                        session.getId()
-                );
+        broadcastUsingRemainingSessions(pokerRoomService.leave(session.getId()));
+    }
 
-        /*
-         * A participant removed by the host has already had their
-         * session -> room binding removed by PokerRoomService.
-         *
-         * Therefore this safely becomes a no-op.
-         */
-        if (leaveResult.roomCode() == null) {
-
-            return;
-        }
-
-        if (leaveResult.roomClosed()) {
-
-            for (String affectedSessionId :
-                    leaveResult.affectedSessionIds()) {
-
-                WebSocketSession affectedSession =
-                        sessions.get(
-                                affectedSessionId
-                        );
-
-                if (affectedSession == null) {
-                    continue;
-                }
-
-                sendRoomClosed(
-                        affectedSession
-                );
-
-                closeQuietly(
-                        affectedSession,
-                        CloseStatus.NORMAL
-                );
+    @Scheduled(fixedDelay = 250)
+    public void expireDisconnectedRoomMembers() {
+        for (String sessionId : pokerRoomService.closeRoomsAfterHostTimeout()) {
+            WebSocketSession session = sessions.get(sessionId);
+            if (session != null) {
+                sendRoomClosed(session);
+                closeQuietly(session, CloseStatus.NORMAL);
             }
-
-            return;
         }
-
-        broadcastUsingRemainingSessions(
-                leaveResult.affectedSessionIds()
-        );
+        pokerRoomService.expireDisconnectedParticipants().forEach(this::broadcastRoomState);
     }
 
     /*

@@ -76,7 +76,9 @@ public class PokerRoomService {
 
     private static final int MAX_ROOM_CODE_INPUT_LENGTH = 32;
 
-    private static final int MAX_HOST_TOKEN_INPUT_LENGTH = 128;
+    public static final int MAX_RECONNECT_TOKEN_INPUT_LENGTH = 128;
+
+    private static final long RECONNECT_GRACE_MS = 60_000;
 
     private static final int MAX_PARTICIPANT_ID_INPUT_LENGTH = 64;
 
@@ -118,7 +120,7 @@ public class PokerRoomService {
      */
     private static final int ROOM_CODE_SYMBOL_COUNT = 16;
 
-    private static final int HOST_TOKEN_BYTES = 32;
+    private static final int RECONNECT_TOKEN_BYTES = 32;
 
     private static final Pattern ROOM_CODE_PATTERN =
             Pattern.compile(
@@ -441,7 +443,7 @@ public class PokerRoomService {
                 generateUniqueRoomCode();
 
         String hostToken =
-                generateHostToken();
+                generateReconnectToken();
 
         byte[] hostTokenHash =
                 sha256(hostToken);
@@ -457,7 +459,8 @@ public class PokerRoomService {
                 new Participant(
                         sessionId,
                         name,
-                        true
+                        true,
+                        null
                 );
 
         room.getParticipantMap()
@@ -508,11 +511,8 @@ public class PokerRoomService {
         PokerRoom room =
                 rooms.get(roomCode);
 
-        if (room == null) {
-
-            throw new IllegalArgumentException(
-                    "Room not found or unavailable."
-            );
+        if (room == null || hostGracePeriodExpired(room, System.currentTimeMillis())) {
+            throw new IllegalArgumentException("Room not found or unavailable.");
         }
 
         if (room.getParticipantCount()
@@ -543,12 +543,8 @@ public class PokerRoomService {
             );
         }
 
-        Participant participant =
-                new Participant(
-                        sessionId,
-                        name,
-                        false
-                );
+        String reconnectToken = generateReconnectToken();
+        Participant participant = new Participant(sessionId, name, false, sha256(reconnectToken));
 
         room.getParticipantMap()
                 .put(
@@ -563,10 +559,7 @@ public class PokerRoomService {
 
         room.touch();
 
-        return new JoinRoomResult(
-                roomCode,
-                participant
-        );
+        return new JoinRoomResult(roomCode, participant, reconnectToken);
     }
 
     /*
@@ -670,94 +663,112 @@ public class PokerRoomService {
      * =========================================================
      */
 
-    public synchronized LeaveResult leave(
-            String sessionId) {
-
-        if (sessionId == null
-                ||
-                sessionId.isBlank()) {
-
-            return LeaveResult.notJoined();
+    public synchronized List<String> leave(String sessionId) {
+        if (sessionId == null) {
+            return List.of();
         }
 
-        String roomCode =
-                sessionRooms.remove(
-                        sessionId
-                );
-
-        if (roomCode == null) {
-
-            return LeaveResult.notJoined();
-        }
-
-        PokerRoom room =
-                rooms.get(
-                        roomCode
-                );
-
+        String roomCode = sessionRooms.remove(sessionId);
+        PokerRoom room = roomCode == null ? null : rooms.get(roomCode);
         if (room == null) {
-
-            return new LeaveResult(
-                    roomCode,
-                    false,
-                    List.of()
-            );
+            return List.of();
         }
 
-        boolean hostLeaving =
-                sessionId.equals(
-                        room.getHostSessionId()
-                );
-
-        room.getParticipantMap()
-                .remove(
-                        sessionId
-                );
-
-        /*
-         * Security decision:
-         *
-         * Closing the host connection destroys the room instead
-         * of automatically promoting another participant.
-         */
-        if (hostLeaving) {
-
-            List<String> affectedSessions =
-                    new ArrayList<>(
-                            room.getParticipantMap()
-                                    .keySet()
-                    );
-
-            closeRoom(room);
-
-            return new LeaveResult(
-                    roomCode,
-                    true,
-                    affectedSessions
-            );
-        }
-
-        if (room.isEmpty()) {
-
-            closeRoom(room);
-
-            return new LeaveResult(
-                    roomCode,
-                    true,
-                    List.of()
-            );
+        // Keep the participant record and selection for a possible reconnect.
+        long deadline = System.currentTimeMillis() + RECONNECT_GRACE_MS;
+        if (sessionId.equals(room.getHostSessionId())) {
+            room.setHostDisconnectDeadlineEpochMs(deadline);
+        } else {
+            room.getParticipant(sessionId).setReconnectDeadlineEpochMs(deadline);
         }
 
         room.touch();
+        return room.getParticipantMap().keySet().stream()
+                .filter(sessionRooms::containsKey)
+                .toList();
+    }
 
-        return new LeaveResult(
-                roomCode,
-                false,
-                new ArrayList<>(
-                        room.getParticipantMap()
-                                .keySet()
-                )
-        );
+    public synchronized String resumeHost(String sessionId, String rawRoomCode, String hostToken) {
+        cleanupExpiredRooms();
+        validateSessionId(sessionId);
+        ensureSessionNotAlreadyJoined(sessionId);
+
+        String roomCode = normalizeRoomCode(rawRoomCode);
+        PokerRoom room = rooms.get(roomCode);
+        if (room == null
+                || hostGracePeriodExpired(room, System.currentTimeMillis())
+                || hostToken == null
+                || hostToken.isBlank()
+                || hostToken.length() > MAX_RECONNECT_TOKEN_INPUT_LENGTH
+                || !MessageDigest.isEqual(sha256(hostToken), room.getHostTokenHash())) {
+            throw new IllegalArgumentException("Unable to resume hosting this room.");
+        }
+
+        // A refresh can open the new socket before the old socket reports its close.
+        String previousSessionId = room.getHostSessionId();
+        sessionRooms.remove(previousSessionId, roomCode);
+        room.resumeHost(sessionId);
+        sessionRooms.put(sessionId, roomCode);
+        return previousSessionId;
+    }
+
+    public synchronized String resumeParticipant(String sessionId, String rawRoomCode, String reconnectToken) {
+        cleanupExpiredRooms();
+        validateSessionId(sessionId);
+        ensureSessionNotAlreadyJoined(sessionId);
+
+        String roomCode = normalizeRoomCode(rawRoomCode);
+        PokerRoom room = rooms.get(roomCode);
+        long now = System.currentTimeMillis();
+        if (room == null || hostGracePeriodExpired(room, now)
+                || reconnectToken == null || reconnectToken.isBlank()
+                || reconnectToken.length() > MAX_RECONNECT_TOKEN_INPUT_LENGTH) {
+            throw new IllegalArgumentException("Unable to reconnect to this room.");
+        }
+
+        byte[] tokenHash = sha256(reconnectToken);
+        Participant participant = room.getParticipantMap().values().stream()
+                .filter(member -> !member.reconnectExpired(now) && member.matchesReconnectToken(tokenHash))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unable to reconnect to this room."));
+        String previousSessionId = participant.getSessionId();
+        sessionRooms.remove(previousSessionId, roomCode);
+        room.rebindParticipant(previousSessionId, sessionId);
+        sessionRooms.put(sessionId, roomCode);
+        return previousSessionId;
+    }
+
+    public synchronized List<String> expireDisconnectedParticipants() {
+        long now = System.currentTimeMillis();
+        List<String> changedRoomSessions = new ArrayList<>();
+        for (PokerRoom room : rooms.values()) {
+            if (room.getParticipantMap().values().removeIf(participant -> participant.reconnectExpired(now))) {
+                room.getParticipantMap().keySet().stream()
+                        .filter(sessionRooms::containsKey)
+                        .findFirst()
+                        .ifPresent(changedRoomSessions::add);
+            }
+        }
+        return changedRoomSessions;
+    }
+
+    public synchronized List<String> closeRoomsAfterHostTimeout() {
+        long now = System.currentTimeMillis();
+        List<PokerRoom> expiredRooms = rooms.values().stream()
+                .filter(room -> hostGracePeriodExpired(room, now))
+                .toList();
+
+        List<String> affectedSessions = new ArrayList<>();
+        for (PokerRoom room : expiredRooms) {
+            affectedSessions.addAll(room.getParticipantMap().keySet());
+            closeRoom(room);
+        }
+        return affectedSessions;
+    }
+
+    private boolean hostGracePeriodExpired(PokerRoom room, long now) {
+        long deadline = room.getHostDisconnectDeadlineEpochMs();
+        return deadline != 0 && now >= deadline;
     }
 
     /*
@@ -1063,6 +1074,10 @@ public class PokerRoomService {
         ).getTimerEndEpochMs();
     }
 
+    public synchronized long getHostDisconnectDeadlineEpochMs(String sessionId) {
+        return requireRoomForSession(sessionId).getHostDisconnectDeadlineEpochMs();
+    }
+
     public synchronized boolean isHostSession(
             String sessionId) {
 
@@ -1115,7 +1130,7 @@ public class PokerRoomService {
                 rawHostToken.isBlank()
                 ||
                 rawHostToken.length()
-                        > MAX_HOST_TOKEN_INPUT_LENGTH) {
+                        > MAX_RECONNECT_TOKEN_INPUT_LENGTH) {
 
             return false;
         }
@@ -1298,15 +1313,15 @@ public class PokerRoomService {
 
     /*
      * =========================================================
-     * HOST TOKEN GENERATION
+     * RECONNECT TOKEN GENERATION
      * =========================================================
      */
 
-    private String generateHostToken() {
+    private String generateReconnectToken() {
 
         byte[] bytes =
                 new byte[
-                        HOST_TOKEN_BYTES
+                        RECONNECT_TOKEN_BYTES
                         ];
 
         secureRandom.nextBytes(
@@ -1971,6 +1986,11 @@ public class PokerRoomService {
             PokerRoom room =
                     entry.getValue();
 
+            // The host timeout path closes these rooms and notifies connected participants.
+            if (room.getHostDisconnectDeadlineEpochMs() != 0) {
+                continue;
+            }
+
             boolean idleExpired =
                     now
                             -
@@ -2049,7 +2069,8 @@ public class PokerRoomService {
 
     public record JoinRoomResult(
             String roomCode,
-            Participant participant) {
+            Participant participant,
+            String reconnectToken) {
     }
 
     /**
@@ -2061,20 +2082,5 @@ public class PokerRoomService {
             String roomCode,
             String targetSessionId,
             List<String> remainingSessionIds) {
-    }
-
-    public record LeaveResult(
-            String roomCode,
-            boolean roomClosed,
-            List<String> affectedSessionIds) {
-
-        public static LeaveResult notJoined() {
-
-            return new LeaveResult(
-                    null,
-                    false,
-                    List.of()
-            );
-        }
     }
 }
