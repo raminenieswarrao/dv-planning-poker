@@ -460,6 +460,23 @@
             font-weight: 700;
         }
 
+        .enable-revisions-button {
+            border-color: #e8a46d;
+            background: #fff1df;
+            color: #9a3412;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .enable-revisions-button:hover:not(:disabled) {
+            background: #ffe1bd;
+        }
+
+        .enable-revisions-button:disabled {
+            cursor: default;
+            opacity: 0.65;
+        }
+
         .copy-room-button:hover {
             background: #f2f4f7;
         }
@@ -884,6 +901,21 @@
             animation: revealCard 0.3s ease-out;
         }
 
+        .revised-estimate-card {
+            position: absolute;
+            top: -8px;
+            left: calc(100% - 4px);
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            border: 2px solid #c2510c;
+            border-radius: inherit;
+            background: #ffedd5;
+            color: #9a3412;
+            box-shadow: 0 2px 5px #44210e40;
+        }
+
         .face-up-card.choice-card {
             width: 48px;
 
@@ -1101,6 +1133,18 @@
             color: white;
         }
 
+        .revision-grid .option-button {
+            border-color: #c2510c;
+            background: #fff7ed;
+            color: #9a3412;
+        }
+
+        .revision-grid .option-button:hover,
+        .revision-grid .option-button.selected {
+            background: #c2510c;
+            color: white;
+        }
+
         .option-button:disabled {
             cursor: not-allowed;
 
@@ -1224,9 +1268,35 @@
            ===================================================== */
 
         .results-panel {
-            display: none;
-
+            flex: 0 0 auto;
             padding: 14px 0 3px;
+        }
+
+        .revised-results-panel {
+            margin-top: 12px;
+            padding: 12px;
+            border: 1px solid #f2be94;
+            border-radius: 12px;
+            background: #fff7ed;
+            color: #9a3412;
+        }
+
+        .revised-results-panel .summary-item {
+            border-color: #fed7aa;
+        }
+
+        .revised-results-panel .summary-item span,
+        .revised-results-panel .summary-item strong,
+        .revised-results-panel .distribution-count {
+            color: #9a3412;
+        }
+
+        .revised-results-panel .distribution-track {
+            background: #ffedd5;
+        }
+
+        .revised-results-panel .distribution-bar {
+            background: #c2510c;
         }
 
         .summary-grid {
@@ -1813,6 +1883,9 @@
 
                     </button>
 
+                    <button type="button" id="enableRevisionsButton" class="copy-room-button enable-revisions-button"
+                            onclick="enableRevisions()" hidden>Enable Revisions</button>
+
                 </div>
 
             </div>
@@ -1987,7 +2060,7 @@
                 <!-- RESULTS -->
 
                 <div id="resultsPanel"
-                     class="results-panel">
+                     class="results-panel" hidden>
 
                     <div class="section-title">
                         Results
@@ -2047,6 +2120,17 @@
 
                 </div>
 
+
+                <div id="revisedResultsPanel" class="results-panel revised-results-panel" hidden>
+                    <div class="section-title">Revised Results</div>
+                    <div class="summary-grid">
+                        <div class="summary-item"><span>Average</span><strong>-</strong></div>
+                        <div class="summary-item"><span>Most Voted</span><strong>-</strong></div>
+                        <div class="summary-item"><span>Total Votes</span><strong>-</strong></div>
+                    </div>
+                    <div class="distribution-title">Vote Distribution</div>
+                    <div class="distribution"></div>
+                </div>
 
                 <!-- HOST CONTROLS -->
 
@@ -2454,6 +2538,8 @@
 
     let currentRoomCode =
         "";
+
+    let revisionsEnabled = false;
 
     let revealed =
         false;
@@ -3576,6 +3662,13 @@
        VOTE
        ===================================================== */
 
+    function enableRevisions() {
+        if (canSendRoomAction()) {
+            showRoomActionError("");
+            socket.send(JSON.stringify({ action: "ENABLE_REVISIONS" }));
+        }
+    }
+
     function vote(
         button,
         selection
@@ -3584,11 +3677,14 @@
         unlockAudio();
 
 
-        if (
-            revealed ||
-            !canSendRoomAction()
-        ) {
+        if (!canSendRoomAction()) {
+            return;
+        }
 
+        if (revealed) {
+            if (revisionsEnabled) {
+                socket.send(JSON.stringify({ action: "REVISE_ESTIMATE", selection }));
+            }
             return;
         }
 
@@ -4124,7 +4220,16 @@
         }
 
 
-        if (resumingRoom) {
+        revisionsEnabled = revealed && currentMode === "ESTIMATE" && data.revisionsEnabled === true;
+        const enableButton = document.getElementById("enableRevisionsButton");
+        enableButton.hidden = !data.youAreHost || currentMode !== "ESTIMATE";
+        enableButton.disabled = !revealed || revisionsEnabled;
+        enableButton.textContent = revisionsEnabled ? "Revisions Enabled" : "Enable Revisions";
+        enableButton.title = revealed ? "" : "Reveal estimates to enable revisions";
+
+        if (revealed && currentMode === "ESTIMATE") {
+            localSelection = data.yourRevisedSelection ?? data.yourSelection ?? null;
+        } else if (resumingRoom) {
             localSelection = data.yourSelection ?? null;
         }
         renderHostDisconnectNotice(data.hostDisconnectRemainingMs);
@@ -4332,15 +4437,19 @@
         ) {
 
             title.innerText =
-                "Choose your estimate";
+                revisionsEnabled ? "Revise your estimate" : "Choose your estimate";
 
 
             helper.innerText =
-                "Use ? when you need clarification or still have questions.";
+                revisionsEnabled
+                    ? "Choose a value to play a visible orange card. Choose your original value to confirm it."
+                    : data.revealed
+                        ? "Estimates are locked until the host enables revisions."
+                        : "Use ? when you need clarification or still have questions.";
 
 
             grid.className =
-                "option-grid estimate-grid";
+                revisionsEnabled ? "option-grid estimate-grid revision-grid" : "option-grid estimate-grid";
 
         } else if (
             currentMode ===
@@ -4404,7 +4513,7 @@
 
 
                 button.disabled =
-                    data.revealed;
+                    data.revealed && !revisionsEnabled;
 
 
                 button.title =
@@ -4725,6 +4834,15 @@
                                 person.selection
                             );
 
+                        if (currentMode === "ESTIMATE" && person.revisedSelection != null) {
+                            const revised = document.createElement("span");
+                            revised.className = "revised-estimate-card";
+                            revised.textContent = getSelectionVisual(person.revisedSelection);
+                            revised.title = "Revised estimate: " + getSelectionLabel(person.revisedSelection);
+                            revised.setAttribute("aria-label", revised.title);
+                            card.appendChild(revised);
+                        }
+
                     } else {
 
                         card.className =
@@ -4996,354 +5114,85 @@
        RESULTS
        ===================================================== */
 
-    function renderResults(
-        data
-    ) {
+    function renderResults(data) {
+        const originalPanel = document.getElementById("resultsPanel");
+        const revisedPanel = document.getElementById("revisedResultsPanel");
+        const participants = data.participants;
+        const hasRevisions = currentMode === "ESTIMATE"
+            && participants.some(person => person.revisedSelection != null);
 
-        const panel =
-            document
-                .getElementById(
-                    "resultsPanel"
-                );
-
-
-        const distribution =
-            document
-                .getElementById(
-                    "voteDistribution"
-                );
-
-
-        distribution.innerHTML =
-            "";
-
-
-        if (
-            !data.revealed
-        ) {
-
-            panel.style.display =
-                "none";
-
-
+        originalPanel.hidden = !data.revealed;
+        revisedPanel.hidden = !data.revealed || !hasRevisions;
+        if (!data.revealed) {
             return;
         }
 
-
-        panel.style.display =
-            "block";
-
-
-        const selections =
-            data.participants
-                .map(
-                    person =>
-                        person.selection
-                )
-                .filter(
-                    selection =>
-                        selection !== null
-                        &&
-                        selection !== undefined
-                );
-
-
-        const counts =
-            Object.create(
-                null
-            );
-
-
-        selections.forEach(
-            selection => {
-
-                counts[selection] =
-                    (
-                        counts[selection] ||
-                        0
-                    )
-                    +
-                    1;
-            }
-        );
-
-
-        const highestCount =
-            Math.max(
-                0,
-                ...Object.values(
-                    counts
-                )
-            );
-
-
-        const winners =
-            getModeOptions()
-                .filter(
-                    option =>
-                        counts[
-                            option.value
-                        ] ===
-                        highestCount
-                        &&
-                        highestCount > 0
-                );
-
-
-        if (
-            currentMode ===
-            "ESTIMATE"
-        ) {
-
-            const numeric =
-                selections
-                    .map(
-                        selection =>
-                            Number(
-                                selection
-                            )
-                    )
-                    .filter(
-                        value =>
-                            !Number.isNaN(
-                                value
-                            )
-                    );
-
-
-            const average =
-                numeric.length
-
-                    ? numeric.reduce(
-                        (
-                            sum,
-                            value
-                        ) =>
-                            sum +
-                            value,
-                        0
-                      )
-                      /
-                      numeric.length
-
-                    : null;
-
-
-            setSummary(
-
-                "Average",
-
-                average === null
-
-                    ? "-"
-
-                    : Number.isInteger(
-                        average
-                      )
-
-                        ? average
-
-                        : average.toFixed(
-                            1
-                          ),
-
-                "Most Voted",
-
-                winners.length
-
-                    ? winners
-                        .map(
-                            option =>
-                                option.label
-                        )
-                        .join(
-                            " / "
-                        )
-
-                    : "-",
-
-                "Total Votes",
-
-                selections.length
-            );
-
-        } else {
-
-            setSummary(
-
-                "Team Choice",
-
-                winners.length
-
-                    ? winners
-                        .map(
-                            option =>
-                                option.visual
-                        )
-                        .join(
-                            " / "
-                        )
-
-                    : "-",
-
-                "Top Votes",
-
-                highestCount ||
-                "-",
-
-                "Total Votes",
-
-                selections.length
-            );
+        renderVoteSummary(originalPanel, participants.map(person => person.selection));
+        if (hasRevisions) {
+            renderVoteSummary(revisedPanel, participants.map(person => person.revisedSelection ?? person.selection));
         }
-
-
-        getModeOptions()
-            .forEach(
-                option => {
-
-                    const count =
-                        counts[
-                            option.value
-                        ] ||
-                        0;
-
-
-                    if (
-                        count === 0
-                    ) {
-
-                        return;
-                    }
-
-
-                    const percentage =
-                        selections.length
-
-                            ? count /
-                              selections.length *
-                              100
-
-                            : 0;
-
-
-                    const row =
-                        document
-                            .createElement(
-                                "div"
-                            );
-
-
-                    row.className =
-                        "distribution-row";
-
-
-                    row.innerHTML = `
-
-                        <div
-                            class="distribution-point"
-                            title="${escapeHtml(option.label)}">
-
-                            ${
-                                currentMode === "ESTIMATE"
-
-                                    ? escapeHtml(
-                                        option.label
-                                      )
-
-                                    : escapeHtml(
-                                        option.visual +
-                                        " " +
-                                        option.label
-                                      )
-                            }
-
-                        </div>
-
-                        <div class="distribution-track">
-
-                            <div
-                                class="distribution-bar"
-                                style="width:${percentage}%;">
-                            </div>
-
-                        </div>
-
-                        <div class="distribution-count">
-
-                            ${count}
-                            vote${count === 1 ? "" : "s"}
-
-                            (${percentage.toFixed(0)}%)
-
-                        </div>
-
-                    `;
-
-
-                    distribution.appendChild(
-                        row
-                    );
-                }
-            );
     }
 
+    function renderVoteSummary(panel, votes) {
+        const selections = votes.filter(selection => selection != null);
+        const counts = Object.create(null);
+        for (const selection of selections) {
+            counts[selection] = (counts[selection] || 0) + 1;
+        }
 
-    function setSummary(
-        label1,
-        value1,
-        label2,
-        value2,
-        label3,
-        value3
-    ) {
+        const options = getModeOptions();
+        const highestCount = Math.max(0, ...Object.values(counts));
+        const winners = options.filter(option => counts[option.value] === highestCount);
+        const estimate = currentMode === "ESTIMATE";
+        let summary;
 
-        document
-            .getElementById(
-                "resultLabel1"
-            )
-            .innerText =
-            label1;
+        if (estimate) {
+            const numeric = selections.map(Number).filter(value => !Number.isNaN(value));
+            const average = numeric.length
+                ? numeric.reduce((sum, value) => sum + value, 0) / numeric.length
+                : null;
+            summary = [
+                ["Average", average === null ? "-" : Number.isInteger(average) ? average : average.toFixed(1)],
+                ["Most Voted", winners.map(option => option.label).join(" / ") || "-"]
+            ];
+        } else {
+            summary = [
+                ["Team Choice", winners.map(option => option.visual).join(" / ") || "-"],
+                ["Top Votes", highestCount || "-"]
+            ];
+        }
+        summary.push(["Total Votes", selections.length]);
 
+        panel.querySelectorAll(".summary-item").forEach((item, index) => {
+            const [label, value] = summary[index];
+            item.querySelector("span").textContent = label;
+            item.querySelector("strong").textContent = value;
+        });
 
-        document
-            .getElementById(
-                "resultValue1"
-            )
-            .innerText =
-            value1;
+        const distribution = panel.querySelector(".distribution");
+        distribution.replaceChildren();
+        for (const option of options) {
+            const count = counts[option.value];
+            if (!count) {
+                continue;
+            }
 
-
-        document
-            .getElementById(
-                "resultLabel2"
-            )
-            .innerText =
-            label2;
-
-
-        document
-            .getElementById(
-                "resultValue2"
-            )
-            .innerText =
-            value2;
-
-
-        document
-            .getElementById(
-                "resultLabel3"
-            )
-            .innerText =
-            label3;
-
-
-        document
-            .getElementById(
-                "resultValue3"
-            )
-            .innerText =
-            value3;
+            const percentage = count / selections.length * 100;
+            const row = document.createElement("div");
+            row.className = "distribution-row";
+            row.innerHTML = `
+                <div class="distribution-point" title="${escapeHtml(option.label)}">
+                    ${escapeHtml(estimate ? option.label : option.visual + " " + option.label)}
+                </div>
+                <div class="distribution-track">
+                    <div class="distribution-bar" style="width:${percentage}%;"></div>
+                </div>
+                <div class="distribution-count">
+                    ${count} vote${count === 1 ? "" : "s"} (${percentage.toFixed(0)}%)
+                </div>
+            `;
+            distribution.appendChild(row);
+        }
     }
 
 
@@ -5547,6 +5396,7 @@
     ) {
 
         renderHostDisconnectNotice(0);
+        revisionsEnabled = false;
         showRoomActionError("");
         renderLeadershipMenu([], false);
 

@@ -452,7 +452,12 @@ public class PokerWebSocketHandler
                  * =================================================
                  */
 
-                case "VOTE" -> {
+                case "ENABLE_REVISIONS" -> {
+                    pokerRoomService.enableRevisions(session.getId());
+                    broadcastRoomState(session.getId());
+                }
+
+                case "VOTE", "REVISE_ESTIMATE" -> {
 
                     String selection =
                             requiredText(
@@ -464,7 +469,8 @@ public class PokerWebSocketHandler
 
                     pokerRoomService.vote(
                             session.getId(),
-                            selection
+                            selection,
+                            "REVISE_ESTIMATE".equals(action)
                     );
 
                     broadcastRoomState(
@@ -682,6 +688,8 @@ public class PokerWebSocketHandler
                                     sourceSessionId
                             );
 
+            boolean revisionsEnabled = pokerRoomService.areRevisionsEnabled(sourceSessionId);
+
             for (String targetSessionId :
                     roomSessionIds) {
 
@@ -774,6 +782,7 @@ public class PokerWebSocketHandler
                                                         participant
                                                                 .getSelection()
                                                 );
+                                                data.put("revisedSelection", participant.getRevisedSelection());
                                             }
 
                                             return data;
@@ -815,7 +824,9 @@ public class PokerWebSocketHandler
                 );
 
                 response.put("yourName", currentUser.getName());
+                response.put("revisionsEnabled", revisionsEnabled);
                 response.put("yourSelection", currentUser.getSelection());
+                response.put("yourRevisedSelection", currentUser.getRevisedSelection());
 
                 response.put(
                         "participants",

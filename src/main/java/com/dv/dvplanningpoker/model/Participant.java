@@ -61,6 +61,7 @@ public class Participant {
      * null means the participant has not voted.
      */
     private String selection;
+    private String revisedSelection;
 
     public Participant(
             String sessionId,
@@ -186,10 +187,19 @@ public class Participant {
                 selection;
     }
 
+    public String getRevisedSelection() {
+        return revisedSelection;
+    }
+
+    public void setRevisedSelection(String revisedSelection) {
+        this.revisedSelection = revisedSelection;
+    }
+
     public void clearSelection() {
 
         this.selection =
                 null;
+        this.revisedSelection = null;
     }
 
     public boolean isVoted() {

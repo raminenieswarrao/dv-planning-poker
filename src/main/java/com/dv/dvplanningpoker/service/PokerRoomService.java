@@ -783,7 +783,8 @@ public class PokerRoomService {
 
     public synchronized void vote(
             String sessionId,
-            String rawSelection) {
+            String rawSelection,
+            boolean revision) {
 
         PokerRoom room =
                 requireRoomForSession(
@@ -796,11 +797,12 @@ public class PokerRoomService {
                         sessionId
                 );
 
-        if (room.isRevealed()) {
+        if (revision && !room.areRevisionsEnabled()) {
+            throw new IllegalStateException("The host has not enabled estimate revisions for this round.");
+        }
 
-            throw new IllegalStateException(
-                    "This round has already been revealed."
-            );
+        if (!revision && room.isRevealed()) {
+            throw new IllegalStateException("This round has already been revealed.");
         }
 
         if (rawSelection == null
@@ -829,9 +831,11 @@ public class PokerRoomService {
             );
         }
 
-        participant.setSelection(
-                selection
-        );
+        if (revision) {
+            participant.setRevisedSelection(selection);
+        } else {
+            participant.setSelection(selection);
+        }
 
         room.touch();
     }
@@ -1052,6 +1056,23 @@ public class PokerRoomService {
         return room.getParticipant(
                 sessionId
         );
+    }
+
+    public synchronized void enableRevisions(String sessionId) {
+        PokerRoom room = requireRoomForSession(sessionId);
+        if (!isHost(room, sessionId)) {
+            throw new IllegalStateException("Only the host can enable estimate revisions.");
+        }
+        if (!room.isRevealed() || !MODE_ESTIMATE.equals(room.getCurrentMode())) {
+            throw new IllegalStateException("Reveal the estimates before enabling revisions.");
+        }
+
+        room.enableRevisions();
+        room.touch();
+    }
+
+    public synchronized boolean areRevisionsEnabled(String sessionId) {
+        return requireRoomForSession(sessionId).areRevisionsEnabled();
     }
 
     public synchronized boolean isRevealed(

@@ -73,6 +73,7 @@ public final class PokerRoom {
      * Whether the current round has been revealed.
      */
     private boolean revealed;
+    private boolean revisionsEnabled;
 
     /**
      * Server epoch timestamp when the timer expires.
@@ -256,6 +257,14 @@ public final class PokerRoom {
         touch();
     }
 
+    public boolean areRevisionsEnabled() {
+        return revisionsEnabled;
+    }
+
+    public void enableRevisions() {
+        revisionsEnabled = true;
+    }
+
     public boolean isRevealed() {
 
         return revealed;
@@ -336,6 +345,7 @@ public final class PokerRoom {
 
         revealed =
                 false;
+        revisionsEnabled = false;
 
         timerEndEpochMs =
                 0L;
