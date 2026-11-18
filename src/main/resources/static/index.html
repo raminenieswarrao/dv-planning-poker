@@ -701,6 +701,84 @@
            HOST PARTICIPANT MODERATION
            ===================================================== */
 
+        .room-header-actions {
+            display: grid;
+            justify-items: end;
+            gap: 10px;
+        }
+
+        .room-status-actions,
+        .room-leadership,
+        .room-leadership-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .room-leadership[hidden],
+        .room-leadership-controls[hidden],
+        .room-header-button[hidden] {
+            display: none;
+        }
+
+        .room-header-button,
+        .room-leadership select {
+            min-height: 34px;
+            padding: 6px 12px;
+            border: 1px solid #c9d9ed;
+            border-radius: 8px;
+            background: #f2f7ff;
+            color: #164a85;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .room-header-button {
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .room-header-button:hover {
+            filter: brightness(0.96);
+        }
+
+        .room-header-button:focus-visible,
+        .room-leadership select:focus-visible {
+            outline: 2px solid #2563eb;
+            outline-offset: 2px;
+        }
+
+        .room-header-button.leave-room {
+            border-color: #f0b6b4;
+            background: #fff1f0;
+            color: #a32225;
+        }
+
+        .room-header-button.make-host {
+            border-color: #1557b0;
+            background: #1557b0;
+            color: white;
+        }
+
+        .room-header-button.make-co-host {
+            border-color: #cebdf6;
+            background: #f4efff;
+            color: #5b319a;
+        }
+
+        .room-leadership select {
+            max-width: 180px;
+            background: white;
+        }
+
+        .room-action-error {
+            color: #b42318;
+            margin: 8px 0;
+        }
+
         .remove-participant-button {
             display: block;
 
@@ -1698,6 +1776,8 @@
             <span id="hostDisconnectCountdown" aria-hidden="true"></span>
         </p>
 
+        <p id="roomActionError" class="room-action-error" role="alert" hidden></p>
+
         <div class="room-header">
 
             <div>
@@ -1738,13 +1818,25 @@
             </div>
 
 
-            <div class="live-indicator">
-
-                <span class="live-dot"></span>
-
-                Live Room
-
+            <div class="room-header-actions">
+                <div class="room-status-actions">
+                    <div class="live-indicator">
+                        <span class="live-dot"></span>
+                        Live Room
+                    </div>
+                    <button type="button" class="room-header-button leave-room" onclick="leaveRoom()">Leave Room</button>
+                </div>
+                <div id="roomLeadershipMenu" class="room-leadership" hidden>
+                    <button type="button" id="toggleLeadership" class="room-header-button"
+                            aria-expanded="false" aria-controls="leadershipControls">Manage Host</button>
+                    <div id="leadershipControls" class="room-leadership-controls" hidden>
+                        <select id="leadershipParticipant" aria-label="Choose a participant"></select>
+                        <button type="button" id="makeHostButton" class="room-header-button make-host" hidden>Make Host</button>
+                        <button type="button" id="coHostButton" class="room-header-button make-co-host" hidden>Make Co-host</button>
+                    </div>
+                </div>
             </div>
+
 
         </div>
 
@@ -2906,7 +2998,9 @@
                     updateEntryButtons();
 
 
-                    if (!joined) {
+                    if (joined) {
+                        showRoomActionError(data.message || "Request failed.");
+                    } else {
 
                         showJoinError(
                             typeof data.message ===
@@ -2964,6 +3058,12 @@
                     return;
                 }
 
+
+                if (data.type === "LEFT_ROOM") {
+                    saveRoomResume(null, { keepBrowserCopy: true });
+                    returnToEntryScreen("", false);
+                    return;
+                }
 
                 if (
                     data.type ===
@@ -3825,6 +3925,99 @@
     }
 
 
+    function showRoomActionError(message) {
+        const error = document.getElementById("roomActionError");
+        error.textContent = message;
+        error.hidden = !message;
+    }
+
+    function leaveRoom() {
+        if (canSendRoomAction() && window.confirm("Leave this room?")) {
+            socket.send(JSON.stringify({ action: "LEAVE_ROOM" }));
+        }
+    }
+
+    function renderLeadershipMenu(participants, youAreHost) {
+        const menu = document.getElementById("roomLeadershipMenu");
+        const toggle = document.getElementById("toggleLeadership");
+        const controls = document.getElementById("leadershipControls");
+        const select = document.getElementById("leadershipParticipant");
+        const makeHost = document.getElementById("makeHostButton");
+        const coHost = document.getElementById("coHostButton");
+
+        menu.hidden = !youAreHost;
+        if (!youAreHost) {
+            controls.hidden = true;
+            toggle.setAttribute("aria-expanded", "false");
+            select.replaceChildren();
+            makeHost.hidden = true;
+            coHost.hidden = true;
+            return;
+        }
+
+        const connected = participants.filter(person => !person.host
+            && !person.awaitingReconnect && person.participantId);
+        const selectedId = select.value;
+        const options = [new Option(connected.length ? "Choose a participant" : "No connected participants", "")];
+        for (const person of connected) {
+            options.push(new Option(person.coHost ? person.name + " (Co-host)" : person.name, person.participantId));
+        }
+        if (options.length !== select.options.length || options.some((option, index) =>
+            option.value !== select.options[index].value || option.text !== select.options[index].text)) {
+            select.replaceChildren(...options);
+            select.value = connected.some(person => person.participantId === selectedId) ? selectedId : "";
+        }
+        select.disabled = connected.length === 0;
+
+        const selected = () => connected.find(person => person.participantId === select.value);
+        const updateActions = () => {
+            const person = selected();
+            makeHost.hidden = !person;
+            coHost.hidden = !person;
+            coHost.textContent = person?.coHost ? "Remove Co-host" : "Make Co-host";
+        };
+
+        toggle.onclick = () => {
+            controls.hidden = !controls.hidden;
+            toggle.setAttribute("aria-expanded", String(!controls.hidden));
+            if (!controls.hidden && !select.disabled) {
+                select.focus();
+            }
+        };
+
+        const chooseRole = (action, person) => {
+            if (person && changeLeadership(action, person)) {
+                select.value = "";
+                updateActions();
+                select.focus();
+            }
+        };
+
+        select.onchange = updateActions;
+        makeHost.onclick = () => chooseRole("TRANSFER_HOST", selected());
+        coHost.onclick = () => {
+            const person = selected();
+            chooseRole(person?.coHost ? "REMOVE_CO_HOST" : "MAKE_CO_HOST", person);
+        };
+        updateActions();
+    }
+
+    function changeLeadership(action, person) {
+        if (!canSendRoomAction()) {
+            return false;
+        }
+
+        if (action === "TRANSFER_HOST" && !window.confirm(
+            "Make " + person.name + " the host? You will stay in the room as a participant."
+        )) {
+            return false;
+        }
+
+        showRoomActionError("");
+        socket.send(JSON.stringify({ action, participantId: person.participantId }));
+        return true;
+    }
+
     function removeParticipant(
         participantId,
         participantName
@@ -3953,6 +4146,8 @@
             data
         );
 
+
+        renderLeadershipMenu(participants, Boolean(data.youAreHost));
 
         renderParticipants(
             participants,
@@ -4422,12 +4617,8 @@
                     </div>
 
                     ${
-                        person.host
-                            ? `
-                                <div class="host-badge">
-                                    HOST
-                                </div>
-                              `
+                        person.host || person.coHost
+                            ? `<div class="host-badge">${person.host ? "HOST" : "CO-HOST"}</div>`
                             : ""
                     }
 
@@ -4451,47 +4642,14 @@
                  * backend only to the legitimate host.
                  */
                 if (canRemove) {
-
-                    const removeButton =
-                        document
-                            .createElement(
-                                "button"
-                            );
-
-
-                    removeButton.type =
-                        "button";
-
-
-                    removeButton.className =
-                        "remove-participant-button";
-
-
-                    removeButton.innerText =
-                        "Remove";
-
-
-                    removeButton.title =
-                        "Remove " +
-                        person.name +
-                        " from this room";
-
-
-                    removeButton.onclick =
-                        function () {
-
-                            removeParticipant(
-                                person.participantId,
-                                person.name
-                            );
-                        };
-
-
-                    seat.appendChild(
-                        removeButton
-                    );
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "remove-participant-button";
+                    button.textContent = "Remove";
+                    button.title = "Remove " + person.name + " from this room";
+                    button.onclick = () => removeParticipant(person.participantId, person.name);
+                    seat.appendChild(button);
                 }
-
 
                 container.appendChild(
                     seat
@@ -5389,6 +5547,8 @@
     ) {
 
         renderHostDisconnectNotice(0);
+        showRoomActionError("");
+        renderLeadershipMenu([], false);
 
         const previousRoomCode =
             currentRoomCode;

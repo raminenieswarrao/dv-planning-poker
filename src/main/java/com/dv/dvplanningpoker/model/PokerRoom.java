@@ -37,16 +37,6 @@ public final class PokerRoom {
     private final String roomCode;
 
     /**
-     * SHA-256 hash of the private host token.
-     *
-     * IMPORTANT:
-     *
-     * The raw host token must never be stored here.
-     * Only its hash is retained by the server.
-     */
-    private final byte[] hostTokenHash;
-
-    /**
      * Participants belonging only to this room.
      *
      * Key:
@@ -105,7 +95,6 @@ public final class PokerRoom {
 
     public PokerRoom(
             String roomCode,
-            byte[] hostTokenHash,
             String hostSessionId) {
 
         if (roomCode == null ||
@@ -113,14 +102,6 @@ public final class PokerRoom {
 
             throw new IllegalArgumentException(
                     "Room code is required."
-            );
-        }
-
-        if (hostTokenHash == null ||
-                hostTokenHash.length == 0) {
-
-            throw new IllegalArgumentException(
-                    "Host token hash is required."
             );
         }
 
@@ -134,15 +115,6 @@ public final class PokerRoom {
 
         this.roomCode =
                 roomCode;
-
-        /*
-         * Defensive copy.
-         *
-         * Prevents the caller from modifying the original byte array
-         * after the PokerRoom has been created.
-         */
-        this.hostTokenHash =
-                hostTokenHash.clone();
 
         this.hostSessionId =
                 hostSessionId;
@@ -159,37 +131,33 @@ public final class PokerRoom {
         return roomCode;
     }
 
-    /**
-     * Returns a defensive copy of the host-token hash.
-     *
-     * Never expose the internal byte array directly.
-     */
-    public byte[] getHostTokenHash() {
-
-        return hostTokenHash.clone();
-    }
-
     public String getHostSessionId() {
 
         return hostSessionId;
     }
 
-    /**
-     * Changes the current host session.
-     *
-     * This should only be called after server-side authorization
-     * inside PokerRoomService.
-     */
-    public void resumeHost(String sessionId) {
-        rebindParticipant(hostSessionId, sessionId);
-        hostSessionId = sessionId;
+    public void transferHost(Participant nextHost) {
+        participants.get(hostSessionId).setHost(false);
+        nextHost.setHost(true);
+        nextHost.setCoHost(false);
+        hostSessionId = nextHost.getSessionId();
         hostDisconnectDeadlineEpochMs = 0;
+        touch();
+    }
+
+    public void setCoHost(Participant coHost) {
+        participants.values().forEach(participant -> participant.setCoHost(participant == coHost));
+        touch();
     }
 
     public void rebindParticipant(String previousSessionId, String sessionId) {
         Participant participant = participants.remove(previousSessionId);
         participant.rebindSession(sessionId);
         participants.put(sessionId, participant);
+        if (previousSessionId.equals(hostSessionId)) {
+            hostSessionId = sessionId;
+            hostDisconnectDeadlineEpochMs = 0;
+        }
         touch();
     }
 
@@ -381,7 +349,6 @@ public final class PokerRoom {
      * Intentionally do NOT implement toString() containing:
      *
      * - roomCode
-     * - hostTokenHash
      * - hostSessionId
      * - participant session IDs
      *

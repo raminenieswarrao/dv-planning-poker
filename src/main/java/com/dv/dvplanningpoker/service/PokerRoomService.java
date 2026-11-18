@@ -451,7 +451,6 @@ public class PokerRoomService {
         PokerRoom room =
                 new PokerRoom(
                         roomCode,
-                        hostTokenHash,
                         sessionId
                 );
 
@@ -460,7 +459,7 @@ public class PokerRoomService {
                         sessionId,
                         name,
                         true,
-                        null
+                        hostTokenHash
                 );
 
         room.getParticipantMap()
@@ -594,29 +593,7 @@ public class PokerRoomService {
             );
         }
 
-        String participantId =
-                validateParticipantId(
-                        rawParticipantId
-                );
-
-        Participant target =
-                room.getParticipants()
-                        .stream()
-                        .filter(
-                                participant ->
-                                        participant
-                                                .getParticipantId()
-                                                .equals(
-                                                        participantId
-                                                )
-                        )
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Participant is no longer in the room."
-                                        )
-                        );
+        Participant target = findParticipant(room, rawParticipantId);
 
         /*
          * Never allow the host to remove themselves.
@@ -663,7 +640,35 @@ public class PokerRoomService {
      * =========================================================
      */
 
-    public synchronized List<String> leave(String sessionId) {
+    public synchronized void updateLeadership(String sessionId, String participantId, String action) {
+        PokerRoom room = requireRoomForSession(sessionId);
+        if (!isHost(room, sessionId)) {
+            throw new IllegalStateException("Only the host can manage room leadership.");
+        }
+
+        Participant target = findParticipant(room, participantId);
+        if (target.isHost() || !room.getRoomCode().equals(sessionRooms.get(target.getSessionId()))) {
+            throw new IllegalArgumentException("Choose a connected participant.");
+        }
+
+        if ("TRANSFER_HOST".equals(action)) {
+            room.transferHost(target);
+        } else if ("MAKE_CO_HOST".equals(action)) {
+            room.setCoHost(target);
+        } else if (target.isCoHost()) {
+            room.setCoHost(null);
+        }
+    }
+
+    private Participant findParticipant(PokerRoom room, String rawParticipantId) {
+        String participantId = validateParticipantId(rawParticipantId);
+        return room.getParticipantMap().values().stream()
+                .filter(participant -> participant.getParticipantId().equals(participantId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Participant is no longer in the room."));
+    }
+
+    public synchronized List<String> leave(String sessionId, boolean intentional) {
         if (sessionId == null) {
             return List.of();
         }
@@ -674,12 +679,18 @@ public class PokerRoomService {
             return List.of();
         }
 
-        // Keep the participant record and selection for a possible reconnect.
         long deadline = System.currentTimeMillis() + RECONNECT_GRACE_MS;
         if (sessionId.equals(room.getHostSessionId())) {
             room.setHostDisconnectDeadlineEpochMs(deadline);
-        } else {
-            room.getParticipant(sessionId).setReconnectDeadlineEpochMs(deadline);
+            promoteConnectedCoHost(room);
+        }
+
+        if (!sessionId.equals(room.getHostSessionId())) {
+            if (intentional) {
+                room.getParticipantMap().remove(sessionId);
+            } else {
+                room.getParticipant(sessionId).setReconnectDeadlineEpochMs(deadline);
+            }
         }
 
         room.touch();
@@ -688,28 +699,20 @@ public class PokerRoomService {
                 .toList();
     }
 
-    public synchronized String resumeHost(String sessionId, String rawRoomCode, String hostToken) {
-        cleanupExpiredRooms();
-        validateSessionId(sessionId);
-        ensureSessionNotAlreadyJoined(sessionId);
-
-        String roomCode = normalizeRoomCode(rawRoomCode);
-        PokerRoom room = rooms.get(roomCode);
-        if (room == null
-                || hostGracePeriodExpired(room, System.currentTimeMillis())
-                || hostToken == null
-                || hostToken.isBlank()
-                || hostToken.length() > MAX_RECONNECT_TOKEN_INPUT_LENGTH
-                || !MessageDigest.isEqual(sha256(hostToken), room.getHostTokenHash())) {
-            throw new IllegalArgumentException("Unable to resume hosting this room.");
+    private void promoteConnectedCoHost(PokerRoom room) {
+        long deadline = room.getHostDisconnectDeadlineEpochMs();
+        if (deadline == 0 || hostGracePeriodExpired(room, System.currentTimeMillis())) {
+            return;
         }
 
-        // A refresh can open the new socket before the old socket reports its close.
-        String previousSessionId = room.getHostSessionId();
-        sessionRooms.remove(previousSessionId, roomCode);
-        room.resumeHost(sessionId);
-        sessionRooms.put(sessionId, roomCode);
-        return previousSessionId;
+        room.getParticipantMap().values().stream()
+                .filter(Participant::isCoHost)
+                .filter(participant -> room.getRoomCode().equals(sessionRooms.get(participant.getSessionId())))
+                .findFirst()
+                .ifPresent(coHost -> {
+                    room.getParticipant(room.getHostSessionId()).setReconnectDeadlineEpochMs(deadline);
+                    room.transferHost(coHost);
+                });
     }
 
     public synchronized String resumeParticipant(String sessionId, String rawRoomCode, String reconnectToken) {
@@ -735,6 +738,7 @@ public class PokerRoomService {
         sessionRooms.remove(previousSessionId, roomCode);
         room.rebindParticipant(previousSessionId, sessionId);
         sessionRooms.put(sessionId, roomCode);
+        promoteConnectedCoHost(room);
         return previousSessionId;
     }
 
@@ -1110,55 +1114,6 @@ public class PokerRoomService {
         return new ArrayList<>(
                 room.getParticipantMap()
                         .keySet()
-        );
-    }
-
-    /*
-     * =========================================================
-     * HOST TOKEN
-     * =========================================================
-     */
-
-    public synchronized boolean verifyHostToken(
-            String sessionId,
-            String rawHostToken) {
-
-        if (sessionId == null
-                ||
-                rawHostToken == null
-                ||
-                rawHostToken.isBlank()
-                ||
-                rawHostToken.length()
-                        > MAX_RECONNECT_TOKEN_INPUT_LENGTH) {
-
-            return false;
-        }
-
-        PokerRoom room =
-                getRoomForSessionOrNull(
-                        sessionId
-                );
-
-        if (room == null) {
-            return false;
-        }
-
-        if (!sessionId.equals(
-                room.getHostSessionId()
-        )) {
-
-            return false;
-        }
-
-        byte[] suppliedHash =
-                sha256(
-                        rawHostToken
-                );
-
-        return MessageDigest.isEqual(
-                suppliedHash,
-                room.getHostTokenHash()
         );
     }
 

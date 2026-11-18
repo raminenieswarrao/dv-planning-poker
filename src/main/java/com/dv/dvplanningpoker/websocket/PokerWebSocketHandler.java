@@ -310,9 +310,7 @@ public class PokerWebSocketHandler
                     boolean host = action.equals("RESUME_HOST");
                     String token = requiredText(json, host ? "hostToken" : "reconnectToken",
                             PokerRoomService.MAX_RECONNECT_TOKEN_INPUT_LENGTH, false);
-                    String previousSessionId = host
-                            ? pokerRoomService.resumeHost(session.getId(), roomCode, token)
-                            : pokerRoomService.resumeParticipant(session.getId(), roomCode, token);
+                    String previousSessionId = pokerRoomService.resumeParticipant(session.getId(), roomCode, token);
                     closeQuietly(sessions.get(previousSessionId), ROOM_CONNECTION_REPLACED);
                     broadcastRoomState(session.getId());
                 }
@@ -380,6 +378,19 @@ public class PokerWebSocketHandler
                  * - target belongs to requester's room
                  * - target is not the host
                  */
+
+                case "TRANSFER_HOST", "MAKE_CO_HOST", "REMOVE_CO_HOST" -> {
+                    String participantId = requiredText(
+                            json, "participantId", MAX_PARTICIPANT_ID_INPUT_LENGTH, false);
+                    pokerRoomService.updateLeadership(session.getId(), participantId, action);
+                    broadcastRoomState(session.getId());
+                }
+
+                case "LEAVE_ROOM" -> {
+                    List<String> remaining = pokerRoomService.leave(session.getId(), true);
+                    sendJson(session, Map.of("type", "LEFT_ROOM"));
+                    broadcastUsingRemainingSessions(remaining);
+                }
 
                 case "REMOVE_PARTICIPANT" -> {
 
@@ -726,6 +737,9 @@ public class PokerWebSocketHandler
                                                     "host",
                                                     participant.isHost()
                                             );
+
+                                            data.put("coHost", participant.isCoHost());
+                                            data.put("awaitingReconnect", participant.isAwaitingReconnect());
 
                                             data.put(
                                                     "voted",
@@ -1112,7 +1126,7 @@ public class PokerWebSocketHandler
                 session.getId()
         );
 
-        broadcastUsingRemainingSessions(pokerRoomService.leave(session.getId()));
+        broadcastUsingRemainingSessions(pokerRoomService.leave(session.getId(), false));
     }
 
     @Scheduled(fixedDelay = 250)

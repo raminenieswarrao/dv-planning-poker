@@ -53,6 +53,7 @@ public class Participant {
      * The browser cannot grant itself host privileges.
      */
     private boolean host;
+    private boolean coHost;
 
     /**
      * Current estimate/game/food selection.
@@ -127,6 +128,10 @@ public class Participant {
         reconnectDeadlineEpochMs = deadlineEpochMs;
     }
 
+    public boolean isAwaitingReconnect() {
+        return reconnectDeadlineEpochMs != 0;
+    }
+
     public boolean reconnectExpired(long now) {
         return reconnectDeadlineEpochMs != 0 && now >= reconnectDeadlineEpochMs;
     }
@@ -159,6 +164,14 @@ public class Participant {
 
         this.host =
                 host;
+    }
+
+    public boolean isCoHost() {
+        return coHost;
+    }
+
+    void setCoHost(boolean coHost) {
+        this.coHost = coHost;
     }
 
     public String getSelection() {
